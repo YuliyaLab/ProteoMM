@@ -489,6 +489,7 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 #' DE_mCG_CG_mm_dd = peptideLevel_DE(mm_dd_only, grps,
 #'                                   prot.info=protinfos_mm_dd, pr_ppos=2)
 #'
+#' @importFrom stats p.adjust
 #' @export
 prot_level_multi_part = function(mm_list, treat, prot.info,
                                   prot_col_name, nperm=500, setseed=12345,
@@ -605,7 +606,7 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
  # I will use 'fdr' orption in p.adjust and then rescale the interval [0 1].
  # p-values look the best, according to te theoretical
  # distribution, after such adjustment
- p_vals_tmp =  p.adjust(p_vals, method="fdr")
+ p_vals_tmp =  stats::p.adjust(p_vals, method="fdr")
  mmin = min(p_vals_tmp)
  mmax = max(p_vals_tmp)
  adj_PV = (p_vals_tmp - mmin) / (mmax-mmin)

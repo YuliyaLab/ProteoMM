@@ -302,7 +302,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file=''){
   print(dim(m))
   # check if treatment is a 'factor' vs data.frame',
   # i.e. single vs multiple factors
-  if(class(treatment) == "factor") { # TRUE if one factor
+  if(is.factor(treatment)) { # TRUE if one factor
      n.treatment = 1 # length(treatment)
      n.u.treatment = length(unique(treatment))[1]
   } else { # data.frame
@@ -395,7 +395,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file=''){
     TREATS = treatment
     # temp var to work if we got only 1 treatment vector.
     TREATS = data.frame(treatment)
-    if(class(treatment) == "factor") {
+    if(is.factor(treatment)) {
       colnames(TREATS) = "TREATS"
      } else {
       colnames(TREATS) = colnames(treatment)

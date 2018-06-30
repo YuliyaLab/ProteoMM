@@ -78,7 +78,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
 
   # (From EigenMS) check if treatment is a 'factor' vs data.frame',
   # i.e. single vs multiple factors
-  if(class(treatment) == "factor") { # TRUE if one factor
+  if(is.factor(treatment)) { # TRUE if one factor
     n.treatment = 1 # number of factors in the model
     # number of levels within the only factor
     n.u.treatment = length(unique(treatment))[1]
@@ -143,7 +143,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     nrow_tmp = dim(tmp)[1]
     # R does not remove the variable col_names1 from name
     # space outside of the if/else..
-    if(class(tmp)== 'factor') {
+    if(is.factor(tmp)) {
      col_names1 = tmp
     } else {
       col_names1 = vector('character', nrow_tmp)
