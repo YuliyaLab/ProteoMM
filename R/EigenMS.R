@@ -189,7 +189,7 @@ makeLMFormula = function(eff, var_name='') {
     for (ii in 2:length(cols1))
     {
       lhs = paste(lhs, "+", cols1[ii])  # bl="contr.sum",
-	    params = paste(params, ',', cols1[ii], '=contr.sum', sep='')
+      params = paste(params, ',', cols1[ii], '=contr.sum', sep='')
 	  }
   }
   params = paste(params,")")
@@ -330,7 +330,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file=''){
     for(ii in seq(1,udims[1]) ) {
       pos = grpFactors[,1] == ugrps[ii,1] # set to initial value
       for(jj in seq(2, udims[2]) ) {
-	    pos = pos & grpFactors[,jj] == ugrps[ii,jj]
+        pos = pos & grpFactors[,jj] == ugrps[ii,jj]
       }
 	  grp[pos] = rep(ii, sum(pos))
     }
@@ -345,7 +345,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file=''){
 
   for(ii in seq_len(nrow(m) ) ) {
     for(jj in seq_len(length(unique(grp))) ) {
-        # total number of groups num(g1) * num(g2) * ...
+      # total number of groups num(g1) * num(g2) * ...
       nobs[ii,jj] = sum(!is.na(m[ii, grp==unique(grp)[jj]]))
     }
   }
@@ -390,7 +390,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file=''){
   # contrasts will fail if have only 1 group, thus have else
   if(n.u.treatment > 1) {
     print('Got 2+ treatment grps')
-	  # using general function that can accomodate for 1+ number of factors
+    # using general function that can accomodate for 1+ number of factors
 	  lm.fm = makeLMFormula(treatment, 'TREATS')
     TREATS = treatment
     # temp var to work if we got only 1 treatment vector.

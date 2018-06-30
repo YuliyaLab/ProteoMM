@@ -24,7 +24,7 @@ library('ProteoMM')
 
 # Introduction
 
-ProteoMM is a method that allows one to perform peptide-level differential expression analysis of multiple proteomic datasets simultaneously. ProteoMM provides a single p-value and a single effect size estimate for the differences in protein abundances. A test statistic is computed as a sum of F-statistics produced for each individual dataset. A p-value is then estimated via a permutation test as the distribution of the sum of the F-statistics does not have a closed form solution. Simultaneous utilization of all available peptides within proteins in multiple datasets increases statistical power to detect differences among conditions or treatments. In addition, in ProteoMM package, we build on our previous research and provide functionality for normalization, model-based imputation of missing peptide abundances and peptide-level differential protein expression analysis [1, 2]. 
+ProteoMM is a platform for peptide-level differential expression analysis of single or multiple proteomic datasets simultaneously. ProteoMM provides a single p-value and a single effect size estimate for the differences in protein abundances. A test statistic is computed as a sum of F-statistics produced for each individual dataset. A p-value is then estimated via a permutation test as the distribution of the sum of the F-statistics does not have a closed form solution. Simultaneous utilization of all available peptides within proteins in multiple datasets increases statistical power to detect differences among conditions or treatments. In addition, in ProteoMM package, we build on our previous research and provide functionality for normalization, model-based imputation of missing peptide abundances and peptide-level differential protein expression analysis [1, 2]. 
 
 Currently, combined analysis of multiple datasets is limited to utilizing a multi-dataset t-test [3]. Since in proteomics, protein abundances are measured in terms of the constitutive peptides a t-test would require averaging or “rolling-up” the peptide abundances into protein abundances prior to analysis with a multi-dataset t-test. We have previously shown that such reduction in the number of observations leads to the reduced statistical power and reduced ability to detect differentially expressed proteins [1]. ProteoMM provides a flexible pipeline from raw peptide abundances to protein quantification for multiple as well as single datasets in bottom-up mass spectrometry-based proteomics studies. 
 
@@ -43,7 +43,7 @@ ProteoMM can be installed from Bioconductor:
 
 Alternatively ProteoMM can be installed from GitHub:
 
-*devtools::install_github("yuliya8k/ProteoMM")*
+*devtools::install_github("YuliyaLab/ProteoMM")*
 
 *library(ProteoMM)*
 

@@ -263,7 +263,8 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
       # Apri 9, 2018 - added lo=0 cutoff, truncated normal at 0
       # mainly for multiplexed experiments where abundances may be lower
       # y.impute[set.mar] = stats::rnorm(nn, y.predict, sigma)[set.mar]
-      y.impute[set.mar] = rnorm.trunc(sum(set.mar), y.predict[set.mar], sigma[set.mar], lo=0)
+      y.impute[set.mar] = rnorm.trunc(sum(set.mar), y.predict[set.mar], 
+                                      sigma[set.mar], lo=0)
     }
 
     y.impute.return = t(y.impute)

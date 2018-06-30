@@ -1,7 +1,7 @@
 Package: ProteoMM
 Type: Package
 Title: Multi-Dataset Model-based Differential Expression Proteomics Platform
-Version: 0.99.1
+Version: 0.99.0
 Author: Yuliya V Karpievitch
 Maintainer: Yuliya V Karpievitch <yuliya.k@gmail.com>
 Description: ProteoMM is a statistical method to perform model-based peptide-level 
