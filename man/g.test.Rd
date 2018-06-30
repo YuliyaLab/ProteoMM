@@ -18,10 +18,10 @@ eg: as.factor(c('grp1;, 'grp1', 'grp2', 'grp2'))}
 
 \item{correct}{correction to apply, options: "yates", "williams", "none"
 default: "none"
-NOTE: in MultiMat we only tested & used correction = "none"}
+NOTE: in ProteoMM we only tested & used correction = "none"}
 
 \item{p}{default: rep(1/length(x), length(x)), used in Yates correction
-NOTE: in MultiMat we only tested & used the default parameter value}
+NOTE: in ProteoMM we only tested & used the default parameter value}
 }
 \value{
 htest object the following variables
@@ -42,7 +42,7 @@ Monte Carlo simulation of p-values, via gtestsim.c.
 MC requires recompilation of R.
 Written by Peter Hurd (V3.3 Pete Hurd Sept 29 2001, phurd AT ualberta.ca).
 Yuliya Karpievitch added comments for ease of understanding and
-incorporated into MultiMat.
+incorporated into ProteoMM.
 G & q calculation from Sokal & Rohlf (1995) Biometry 3rd ed.,
 TOI Yates correction taken from Mike Camanns 2x2 G-test function,
 GOF Yates correction as described in Zar (2000),
