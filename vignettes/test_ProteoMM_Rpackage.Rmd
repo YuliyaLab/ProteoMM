@@ -139,6 +139,8 @@ mCG treatment group has more missing values.
 
 ```{r results = FALSE}
 # Identify bias trends with eig_norm1()
+set.seed(135) # generally number of bias trends automatically identified does 
+# not change based on teh seed,  but for 100% reproducibility let's set the seed
 hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 ```
 
@@ -251,6 +253,8 @@ mCG treatment group has more missing values.
 
 
 ```{r results = FALSE}
+set.seed(137) # generally number of bias trends automatically identified does 
+# not change based on teh seed,  but for 100% reproducibility let's set the seed
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 ```
 
@@ -363,7 +367,7 @@ length(unique(hs_prot.info$ProtID))    # 59
 ```{r warning=FALSE, results = FALSE}
 set.seed(1213) 
 imp_hs = MBimpute(hs_norm_m, grps, prot.info=hs_prot.info, pr_ppos=3, 
-                  my.pi=0.05, compute_pi=FALSE, sseed=171717) # use default pi
+                  my.pi=0.05, compute_pi=FALSE) # use default pi
 # historically pi=.05 has been representative of the % missing 
 # observations missing completely at random
 ```
@@ -406,10 +410,11 @@ length(unique(mm_prot.info$ProtID))    # 56
 ```
 
 ```{r warning=FALSE, results = FALSE}
-set.seed(12131) 
+set.seed(12131) # set random number generator seed for reproducibility, 
+# otherwise will get various imputed values for repeated attempts
 # as for Human, impute based on ProtID - position in the matrix for the Protein Identifier 
 imp_mm = MBimpute(mm_norm_m, grps, prot.info=mm_prot.info, pr_ppos=3, 
-                  my.pi=0.05, compute_pi=FALSE, sseed=17171) 
+                  my.pi=0.05, compute_pi=FALSE) 
                   # pi =.05 is usually a good estimate
 ```
 
@@ -500,9 +505,10 @@ nperm = 50   # number of permutations should be 500+ for publication quality
 
 ```{r warning=FALSE, results = FALSE}
 ptm = proc.time()
+set.seed=(12357)
 comb_MBDE = prot_level_multi_part(mm_list=mms, treat=treats,prot.info=protinfos, 
                                   prot_col_name='ProtID', nperm=nperm, 
-                                  setseed=123, dataset_suffix=c('MM', 'HS'))
+                                  dataset_suffix=c('MM', 'HS'))
 proc.time() - ptm  # shows how long it takes to run the test
 ```
 
@@ -631,11 +637,11 @@ dim(subset_presAbs$sub_prot.info[[2]])
 ```{r results = FALSE}
 nperm = 50  # set to 500+ for publication 
 ptm = proc.time()
+set.seed=(123372)
 presAbs_comb=prot_level_multiMat_PresAbs(mm_list=subset_presAbs$sub_mm_list,
                                          treat=treats, 
                                          prot.info=subset_presAbs$sub_prot.info, 
-                                         prot_col_name='MatchedID', nperm=nperm, 
-                                         setseed=123372, 
+                                         prot_col_name='MatchedID', nperm=nperm,
                                          dataset_suffix=c('MM', 'HS') )
 proc.time() - ptm
 ```

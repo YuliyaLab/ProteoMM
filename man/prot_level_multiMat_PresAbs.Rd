@@ -5,7 +5,7 @@
 \title{Multi-Matrix Presence Absence analysis}
 \usage{
 prot_level_multiMat_PresAbs(mm_list, treat, prot.info, prot_col_name,
-  nperm = 500, setseed = 13457, dataset_suffix)
+  nperm = 500, dataset_suffix)
 }
 \arguments{
 \item{mm_list}{list of matrices of intensities for each experiment,
@@ -24,9 +24,6 @@ identifies protein IDs
 across all datasets}
 
 \item{nperm}{number of permutations}
-
-\item{setseed}{random number generator seed, is used to
-permute the data, default 13457}
 
 \item{dataset_suffix}{a list of strings that will be
 appended to the column names
@@ -82,6 +79,8 @@ m_logInts = make_intencities(mm_peptides, intsCols)  # will reuse the name
 m_prot.info = make_meta(mm_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+
+set.seed(135)
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 mm_m_ints_eig1$h.c # check the number of bias trends detected
 mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)
@@ -95,6 +94,8 @@ m_logInts = make_intencities(hs_peptides, intsCols)
 m_prot.info = make_meta(hs_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+
+set.seed(137)
 hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 hs_m_ints_eig1$h.c # check the number of bias trends detected
 hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)
@@ -131,12 +132,13 @@ subset_presAbs = subset_proteins(mm_list=ints_presAbs,
                         prot.info=protmeta_presAbs, 'MatchedID')
 
 nperm = 50  # set to 500+ for publication
+set.seed(275937)
 presAbs_comb = prot_level_multiMat_PresAbs(
                            mm_list=subset_presAbs$sub_mm_list,
                            treat=treats,
                            prot.info=subset_presAbs$sub_prot.info,
                            prot_col_name='MatchedID', nperm=nperm,
-                           setseed=123372, dataset_suffix=c('MM', 'HS') )
+                           dataset_suffix=c('MM', 'HS') )
 
 plot_volcano(presAbs_comb$FC, presAbs_comb$BH_P_val,
              FC_cutoff=.5, PV_cutoff=.05,

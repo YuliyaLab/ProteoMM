@@ -53,6 +53,8 @@ m_logInts = make_intencities(mm_peptides, intsCols)  # will reuse the name
 m_prot.info = make_meta(mm_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+
+set.seed(135)
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 mm_m_ints_eig1$h.c # check the number of bias trends detected
 mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)
@@ -67,6 +69,8 @@ m_logInts = make_intencities(hs_peptides, intsCols)  # will reuse the name
 m_prot.info = make_meta(hs_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+
+set.seed(137) # different seed for different organism
 hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 hs_m_ints_eig1$h.c # check the number of bias trends detected
 hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)

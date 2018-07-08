@@ -51,13 +51,17 @@ m_logInts = convert_log2(m_logInts)
 metaCols = 1:7
 m_prot.info = make_meta(hs_peptides, metaCols)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+
+set.seed(135)
 hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 hs_m_ints_eig1$h.c = 2 # visually looks like there are 2 bias trends at least
 hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)
 hs_prot.info = hs_m_ints_norm$normalized[,metaCols]
 hs_norm_m =  hs_m_ints_norm$normalized[,intsCols]
+
+set.seed(125)
 imp_hs = MBimpute(hs_norm_m, grps, prot.info=hs_prot.info,
-                  pr_ppos=3, my.pi=0.05, compute_pi=FALSE, sseed=171717)
+                  pr_ppos=3, my.pi=0.05, compute_pi=FALSE)
 mylabs = c( 'CG','CG','CG', 'mCG','mCG','mCG')
 prot_to_plot = 'Prot32' # 43
 gene_to_plot = 'Gene32'

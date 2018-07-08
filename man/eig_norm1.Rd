@@ -73,6 +73,12 @@ m_prot.info = make_meta(mm_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 # 3 samples for CG and 3 for mCG
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+
+# ATTENTION: SET RANDOM NUMBER GENERATOR SEED FOR REPRODUCIBILITY !!
+set.seed(123) # Bias trends are determined via a permutaion, results may 
+# vary slightly if a different seed is used, such as when set.seed() function
+# is not used
+
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 mm_m_ints_eig1$h.c # check the number of bias trends detected
 mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)

@@ -5,7 +5,7 @@
 \title{Multi-Matrix Differentia Expression Analysis}
 \usage{
 prot_level_multi_part(mm_list, treat, prot.info, prot_col_name, nperm = 500,
-  setseed = 12345, dataset_suffix)
+  dataset_suffix)
 }
 \arguments{
 \item{mm_list}{list of matrices for each experiment, length = number of
@@ -30,8 +30,6 @@ that link all datasets together}
 \item{nperm}{number of permutations, default = 500,
 this will take a while, test code
 with fewer permutations}
-
-\item{setseed}{random number generator seed, default = 12345}
 
 \item{dataset_suffix}{vector of character strings that corresponds to the
 dataset being analysed. Same length as mm_list. Names will be appended
@@ -73,7 +71,8 @@ statistics for each dataset, the sum of individual statistics is the
 final statistic. The significance is determined via a permutation test
 which computed the same statistics and sums them after permuting
 the values across treatment groups. As is outlined in Karpievitch
-et al. 2018.
+et al. 2018. Important to set the random number generator seed for 
+reprodusibility with set.seed() function.
 }
 \examples{
 # Load mouse dataset
@@ -86,15 +85,16 @@ m_logInts = make_intencities(mm_peptides, intsCols)  # will reuse the name
 m_prot.info = make_meta(mm_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+set.seed(135)
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,
                            prot.info=m_prot.info)
 mm_m_ints_eig1$h.c # check the number of bias trends detected
 mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)
 mm_prot.info = mm_m_ints_norm$normalized[,1:7]
 mm_norm_m =  mm_m_ints_norm$normalized[,8:13]
+set.seed(125) # Needed for reprodicibility of results
 imp_mm = MBimpute(mm_norm_m, grps, prot.info=mm_prot.info,
-                  pr_ppos=2, my.pi=0.05,
-                  compute_pi=FALSE, sseed=131)
+                  pr_ppos=2, my.pi=0.05, compute_pi=FALSE)
 
 # Load human dataset
 data(hs_peptides)
@@ -106,14 +106,17 @@ m_logInts = make_intencities(hs_peptides, intsCols)  # will reuse the name
 m_prot.info = make_meta(hs_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+set.seed(1237) # needed for reproducibility
 hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 hs_m_ints_eig1$h.c # check the number of bias trends detected
 hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)
 hs_prot.info = hs_m_ints_norm$normalized[,1:7]
 hs_norm_m =  hs_m_ints_norm$normalized[,8:13]
+
+set.seed(125) # or any value, ex: 12345
 imp_hs = MBimpute(hs_norm_m, grps, prot.info=hs_prot.info,
                   pr_ppos=2, my.pi=0.05,
-                  compute_pi=FALSE, sseed=131)
+                  compute_pi=FALSE)
 
 # Multi-Matrix Model-based differential expression analysis
 # Set up needed variables
@@ -127,10 +130,14 @@ treats[[2]] = grps
 protinfos[[1]] = imp_mm$imp_prot.info
 protinfos[[2]] = imp_hs$imp_prot.info
 nperm = 50
+
+# ATTENTION: SET RANDOM NUMBER GENERATOR SEED FOR REPRODUCIBILITY !!
+set.seed(131) # needed for reproducibility
+
 comb_MBDE = prot_level_multi_part(mm_list=mms, treat=treats,
                                   prot.info=protinfos,
                                   prot_col_name='ProtID', nperm=nperm,
-                                  setseed=123, dataset_suffix=c('MM', 'HS'))
+                                  dataset_suffix=c('MM', 'HS'))
 
 # Analysis for proteins only present in mouse,
 # there are no proteins suitable for

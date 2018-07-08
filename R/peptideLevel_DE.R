@@ -41,14 +41,18 @@
 #' m_prot.info = make_meta(mm_peptides, metaCols)
 #' m_logInts = convert_log2(m_logInts)
 #' grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+#' 
+#' set.seed(135) # results rarely vary due to the random seed for EigenMS
 #' mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 #' mm_m_ints_eig1$h.c # check the number of bias trends detected
 #' mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)
 #' mm_prot.info = mm_m_ints_norm$normalized[,1:7]
 #' mm_norm_m =  mm_m_ints_norm$normalized[,8:13]
+#' 
+#' set.seed(131) # important to reproduce the results later
 #' imp_mm = MBimpute(mm_norm_m, grps, prot.info=mm_prot.info,
 #'                   pr_ppos=2, my.pi=0.05,
-#'                   compute_pi=FALSE, sseed=131)
+#'                   compute_pi=FALSE)
 #' DE_res = peptideLevel_DE(imp_mm$y_imputed,
 #'                          grps, mm_m_ints_norm$normalized[,metaCols],
 #'                          pr_ppos=2)
@@ -151,13 +155,17 @@ peptideLevel_DE = function(mm, treatment, prot.info, pr_ppos=2)
 #' metaCols = 1:7
 #' m_prot.info = make_meta(hs_peptides, metaCols)
 #' grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+#' 
+#' set.seed(135)
 #' hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 #' hs_m_ints_eig1$h.c = 2 # visually looks like there are 2 bias trends at least
 #' hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)
 #' hs_prot.info = hs_m_ints_norm$normalized[,metaCols]
 #' hs_norm_m =  hs_m_ints_norm$normalized[,intsCols]
+#' 
+#' set.seed(125)
 #' imp_hs = MBimpute(hs_norm_m, grps, prot.info=hs_prot.info,
-#'                   pr_ppos=3, my.pi=0.05, compute_pi=FALSE, sseed=171717)
+#'                   pr_ppos=3, my.pi=0.05, compute_pi=FALSE)
 #' mylabs = c( 'CG','CG','CG', 'mCG','mCG','mCG')
 #' prot_to_plot = 'Prot32' # 43
 #' gene_to_plot = 'Gene32'

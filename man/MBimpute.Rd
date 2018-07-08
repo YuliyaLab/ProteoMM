@@ -5,7 +5,7 @@
 \title{Model-Based Imputation of missing values}
 \usage{
 MBimpute(mm, treatment, prot.info, pr_ppos = 2, my.pi = 0.05,
-  compute_pi = FALSE, sseed = 123457)
+  compute_pi = FALSE)
 }
 \arguments{
 \item{mm}{number of peptides x number of samples matrix of intensities}
@@ -30,9 +30,6 @@ random in proteomics experiments. Thus values is set to NOT
 estimate Pi by default. Note: spline smoothing
 can sometimes produce values of Pi outside the range of
 possible values.}
-
-\item{sseed}{random seed to use in imputation, set this seed to allow to
-reporoduce the values in future runs.}
 }
 \value{
 A structure with multiple components
@@ -64,12 +61,16 @@ m_logInts = make_intencities(mm_peptides, intsCols)  # will reuse the name
 m_prot.info = make_meta(mm_peptides, metaCols)
 m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
+
+set.seed(135)
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 mm_m_ints_eig1$h.c # check the number of bias trends detected
 mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)
 mm_prot.info = mm_m_ints_norm$normalized[,1:7]
 mm_norm_m =  mm_m_ints_norm$normalized[,8:13]
+
+# ATTENTION: SET RANDOM NUMBER GENERATOR SEED FOR REPRODUCIBILITY !!
+set.seed(125) # if nto set every time results will be different
 imp_mm = MBimpute(mm_norm_m, grps, prot.info=mm_prot.info, pr_ppos=2,
-                  my.pi=0.05,
-                  compute_pi=FALSE, sseed=131)
+                  my.pi=0.05, compute_pi=FALSE)
 }
