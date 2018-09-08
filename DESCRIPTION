@@ -20,7 +20,7 @@ Depends: R (>= 3.5)
 License: MIT
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Imports: dplyr,
     gdata,
     biomaRt,
@@ -31,5 +31,5 @@ Imports: dplyr,
     readr,
     stats
 biocViews: MassSpectrometry, Proteomics, Normalization, DifferentialExpression
-Suggests: knitr, rmarkdown
+Suggests: BiocStyle, knitr, rmarkdown
 VignetteBuilder: knitr
