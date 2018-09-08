@@ -4,7 +4,8 @@
 \alias{g.test}
 \title{G Test for presence - absence analysis}
 \usage{
-g.test(x, y = NULL, correct = "none", p = rep(1/length(x), length(x)))
+g.test(x, y = NULL, correct = "none", p = rep(1/length(x),
+  length(x)))
 }
 \arguments{
 \item{x}{vector of boolean values corresponding to presence & absence
