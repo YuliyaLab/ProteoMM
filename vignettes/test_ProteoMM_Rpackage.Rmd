@@ -1,14 +1,12 @@
 ---
 title: "ProteoMM - Multi-Dataset Model-based Differential Expression Proteomics Platform"
-author: "Written by Yuliya V Karpievitch, with contributions from Sufyaan Mohamed and Tim Stuart"
+author: 
+  - Yuliya V Karpievitch
+  - Tim Stuart
+  - Sufyaan Mohamed
 date: "`r Sys.Date()`"
 output:
-  rmarkdown::html_vignette:
-    toc: true
-    number_sections: true
-    df_print: paged
-    fig_width: 7
-    fig_height: 6
+  BiocStyle::html_document
 vignette: >
   %\VignetteEngine{knitr::knitr}
   %\VignetteIndexEntry{Multi-Dataset Model-based Differential Expression Proteomics Platform}
@@ -18,6 +16,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library('ProteoMM')
+set.seed(135)
 ```
 
 \newline 
@@ -36,18 +35,18 @@ datasets. For function definitions and descriptions please use "?" command in R.
 # Installation
 ProteoMM can be installed from Bioconductor:
 
-*BiocInstaller::biocLite("ProteoMM")*
-
-*library(ProteoMM)*
-
+```{r eval=FALSE}
+source("https://bioconductor.org/biocLite.R")
+biocLite("ProteoMM")
+library(ProteoMM)
+```
 
 Alternatively ProteoMM can be installed from GitHub:
 
-*devtools::install_github("YuliyaLab/ProteoMM")*
-
-*library(ProteoMM)*
-
-\newline
+```{r eval=FALSE}
+devtools::install_github("YuliyaLab/ProteoMM")
+library(ProteoMM)
+```
 
 # ProteoMM Analysis Pipeline
 
@@ -66,9 +65,9 @@ Individual steps such as normalization, imputation or presence/absence analysis
 can be skipped but care must be taken to assure that peptides passed into 
 Model-Based Differential Expression Analysis step contain a sufficient number of observations. 
 
-The example we provide in this tutorial follows the suggested  ProteoMM Analysis 
+The example we provide in this tutorial follows the suggested ProteoMM analysis 
 outline in Figure 1 with additional data visualization that we find useful in 
-proteomics data analysis.  
+proteomics data analysis.
 
 \newline
 
@@ -93,6 +92,7 @@ and any other metadata columns that will be propagated through the analysis
 pipeline.
 
 ## Human
+
 Human dataset contains 695 peptides with 13 columns where 6 columns contain 
 intensities and the rest are metadata describing the proteins/peptides.
 There are six samples with three samples in each of the two treatment groups: 
@@ -103,7 +103,7 @@ be used in place of the missing observations. Such replacement will severely
 skew the distribution of intensities and produce invalid differential expression 
 results. For more information see Karpievitch et al. 2009 [1,2]. 
 
-```{r }
+```{r fig.cap="Numbers of missing values in each of the Human samples."}
 # Load data for human, then mouse 
 data("hs_peptides") # loads variable hs_peptides
 dim(hs_peptides)  # 695 x 13   
@@ -132,50 +132,36 @@ barplot(colSums(is.na(m_logInts)),
         main="Numbers of missing values in Human samples (group order)")
 ```
 
-**Figure 1. Numbers of missing values in each of the Human samples.** 
-mCG treatment group has more missing values. 
+Note that the mCG treatment group has more missing values. Next identify bias
+trends with `eig_norm1()`.
 
- 
-
-```{r results = FALSE}
-# Identify bias trends with eig_norm1()
-set.seed(135) # generally number of bias trends automatically identified does 
-# not change based on teh seed,  but for 100% reproducibility let's set the seed
+```{r results = FALSE, fig.cap="Eigentrends for raw and residual peptide intensities in Human samples. Dots at positions 1-6 correspond to the 6 samples. The top trend in the raw data (left panel) shows a pattern representative of the differences between the two groups. Top trend in the Residual Data (right panel) shows that sample 2 and 5 have higher similarity to each other, as well as, 1, 3, 4 and 6 whereas in reality samples 1-3 are from the same treatment group and 3-6 are from the other."}
 hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 ```
 
-**Figure 2. Eigentrends for raw and residual peptide intensities in Human samples.** 
-Dots at positions 1-6 correspond to the 6 samples. Top trend in the Raw Data 
-(left panel) shows a pattern representative of the differences between the two 
-groups. Top trend in the Residual Data (right panel) shows that sample 2 and 5 
-have higher similarity to each other, as well as, 1, 3, 4 and 6 whereas in 
-reality samples 1-3 are from the same treatment group and 3-6 are from the 
-other.
-
 ```{r}
-# check what is inside
 names(hs_m_ints_eig1)
-# Our simulated dataset is small, only 1 bias trend was identified in the 
-# peptides with no missing values. But visually it seems that 
-# there are at least 2.
-hs_m_ints_eig1$h.c # 1
 ```
 
-```{r results = FALSE}
-# Run EigenMS normalization to eliminate 1 bias trend
+Our simulated dataset is small, and only 1 bias trend was identified in the 
+peptides with no missing values. But visually it seems that there are at least 2.
+
+```{r}
+hs_m_ints_eig1$h.c
+```
+
+Run EigenMS normalization to eliminate 1 bias trend
+
+```{r results = FALSE, fig.cap="Eigetrends for raw and normalized peptide intensities in Human samples. Dots at positions 1-6 correspond to the 6 samples. Top trend in the normalized data (right panel) shows a pattern representative of the differences between the two groups (eigen trends can be rotated around the x-axis)."}
 hs_m_ints_norm_1bt = eig_norm2(rv=hs_m_ints_eig1) 
 ```
 
-**Figure 3. Eigetrends for raw and normalized peptide intensities in Human samples.** 
-Dots at positions 1-6 correspond to the 6 samples. Top trend in the Normalized 
-Data (right panel) shows a pattern representative of the differences between the 
-two groups (eigen trends can be rotated around the x-axis). There is a 15% 
-increase in percent variance explained by the trend as is indicated by the 
-percentage in the upper right corner. But the next (middle) trend explains 
-18% of variation, so bias effect of this trend may need to be removed.
+There is a 15% increase in percent variance explained by the trend as is
+indicated by the percentage in the upper right corner. But 
+the next (middle) trend explains 18% of variation, so bias effect of this trend 
+may need to be removed.
 
 ```{r}
-# check what is inside
 names(hs_m_ints_eig1)
 # how many peptides with no missing values (complete) are in the data? 
 dim(hs_m_ints_eig1$complete)# bias trend identification is based on 196 peptides
@@ -190,16 +176,9 @@ to 2 trestnds that are going to be eliminated.
 hs_m_ints_eig1$h.c = 2 # visually there are more than 1 bias trend, set to 2
 ```
 
-```{r results = FALSE}
+```{r results = FALSE, fig.cap="Eigetrends for raw and normalized peptide intensities in Human samples with the effects of two bias trends removed. Dots at positions 1-6 correspond to the 6 samples. Top trend in the Normalized Data (Figure 4, right panel) shows a pattern representative of the differences between the two groups (eigen trends can be rotated around x-axis)."}
 hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)  
-# names(hs_m_ints_norm) 
 ```
-
-**Figure 4. Eigetrends for raw and normalized peptide intensities in Human 
-samples with the effects of two bias trends removed.** Dots at positions 1-6 
-correspond to the 6 samples. Top trend in the Normalized Data (right panel) 
-shows a pattern representative of the differences between the two groups 
-(eigen trends can be rotated around x-axis). 
 
 Figure 4 shows a 28% increase in percent variance explained by the trend where 
 differences between the groups explaining 71% of total variation in the data 
@@ -213,13 +192,14 @@ cat("\\newpage")
 ```
 
 ## Mouse
-Mouse dataset contains 1102 peptides with 13 columns where 6 column contain 
+
+The mouse dataset contains 1102 peptides with 13 columns where 6 column contain 
 intensities and the rest are metadata describing the proteins/peptides.
 
 There are six samples with three samples in each of the two treatment groups: 
 CG and mCG. The data preparation is similar to what we have done for Human data.
 
-```{r}
+```{r, fig.cap="Numbers of missing values in each of the Human samples. mCG treatment group has more missing values."}
 data("mm_peptides") # loads variable mm_peptides
 dim(mm_peptides)
 
@@ -247,21 +227,9 @@ barplot(colSums(is.na(m_logInts)),
         main="Numbers of missing values in Mouse samples (group order)")
 ```
 
-
-**Figure 5. Numbers of missing values in each of the Human samples.** 
-mCG treatment group has more missing values. 
-
-
-```{r results = FALSE}
-set.seed(137) # generally number of bias trends automatically identified does 
-# not change based on teh seed,  but for 100% reproducibility let's set the seed
+```{r results = FALSE, fig.cap="Eigentrends for raw and residual peptide intensities in mouse samples. Dots at positions 1-6 correspond to the 6 samples. The top trend in the normalized data (right panel) shows a pattern representative of the differences between the two groups (eigen trends can be rotated around x-axis)."}
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 ```
-
-**Figure 6. Eigentrends for raw and residual peptide intensities in mouse samples.** 
-Dots at positions 1-6 correspond to the 6 samples. Top trend in the Normalized 
-Data (right panel) shows a pattern representative of the differences between the 
-two groups (eigen trends can be rotated around x-axis). 
 
 The eigentrend that explains most of the variation (45%) in the Mouse data is 
 not representative of the treatment group differences (Figure 5). The second 
@@ -273,15 +241,9 @@ as is indicated by the percentage in the upper right corner.
 mm_m_ints_eig1$h.c 
 ```
 
-```{r results = FALSE}
+```{r results = FALSE, fig.cap="Eigentrends for raw and normalized peptide intensities in mouse samples with the effects of one bias trends removed. Dots at positions 1-6 correspond to the 6 samples. The top trend in the normalized data (Figure 7, right panel) shows a pattern representative of the differences between the two groups."}
 mm_m_ints_norm_1bt = eig_norm2(rv=mm_m_ints_eig1) 
 ```
-
-**Figure 7. Eigentrends for raw and normalized peptide intensities in mouse samples with the effects of one bias trends removed.**
-Dots at positions 1-6 correspond to the 6 samples. Top trend in the Normalized 
-Data Dots at positions 1-6 correspond to the 6 samples. Top trend in the 
-Normalized Data (right panel) shows a pattern representative of the differences 
-between the two groups. 
 
 The eigentrend that explains most of the variation (43%) in the normalized mouse 
 data is representative of the treatment group differences. The second trend in 
@@ -292,22 +254,16 @@ as bias.
 mm_m_ints_eig1$h.c = 2
 ```
 
-```{r results = FALSE}
+```{r results = FALSE, fig.cap="Eigentrends for raw and normalized peptide intensities in mouse samples with the effects of two bias trends removed. Dots at positions 1-6 correspond to the 6 samples. Top trend in the Normalized Data (right panel) shows a pattern representative of the differences between the two groups."}
 mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)  
 # 190 petides with no missing values were used to id bais trends ($complete)
 ```
 
-**Figure 8. Eigentrends for raw and normalized peptide intensities in mouse samples with the effects of two bias trends removed.**
-Dots at positions 1-6 correspond to the 6 samples. Top trend in the Normalized 
-Data (right panel) shows a pattern representative of the differences between 
-the two groups. 
-
-The eigentrend that explains most of the variation in the normalized mouse data representative 
-of the treatment group differences now explains 58% of variation. The second 
-trend in the normalized data explains less of variation that in Figure 6 (24%) 
-which is still a bit high, but we will use these data for analysis to avoid 
-overfitting.  
-
+The eigentrend that explains most of the variation in the normalized mouse data 
+representative of the treatment group differences now explains 58% of variation. 
+The second trend in the normalized data explains less of variation that in 
+Figure 6 (24%) which is still a bit high, but we will use these data for analysis 
+to avoid overfitting.  
 
 ```{r}
 length(mm_m_ints_eig1$prot.info$MatchedID)          # 1102 - correct
@@ -363,16 +319,14 @@ length(unique(hs_prot.info$MatchedID)) # 59
 length(unique(hs_prot.info$ProtID))    # 59
 ```
 
-
 ```{r warning=FALSE, results = FALSE}
-set.seed(1213) 
 imp_hs = MBimpute(hs_norm_m, grps, prot.info=hs_prot.info, pr_ppos=3, 
                   my.pi=0.05, compute_pi=FALSE) # use default pi
 # historically pi=.05 has been representative of the % missing 
 # observations missing completely at random
 ```
 
-```{r}
+```{r, fig.cap="All peptides within protein Prot32 in raw, normalized, and imputed form."}
 # check some numbers after the imputation
 length(unique(imp_hs$imp_prot.info$MatchedID)) # 59 - MatchedID IDs
 length(unique(imp_hs$imp_prot.info$ProtID))    # 59 - Protein IDs
@@ -392,9 +346,6 @@ plot_3_pep_trends_NOfile(as.matrix(hs_m_ints_eig1$m), hs_m_ints_eig1$prot.info,
                          4, mylabs)
                           
 ```
-
-**Figure 9. All peptides within protein Prot32 in raw, normalized, and imputed form.**  
-
 
 ## Mouse
 
@@ -430,7 +381,6 @@ dim(imp_mm$y_imputed)     # 787 x 6
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
 ```
-
 
 \newline
 
@@ -512,7 +462,7 @@ comb_MBDE = prot_level_multi_part(mm_list=mms, treat=treats,prot.info=protinfos,
 proc.time() - ptm  # shows how long it takes to run the test
 ```
 
-```{r}
+```{r, fig.cap="P-value distributions for unadjusted and adjusted p-values. Adjusted p-values (top right) look as expected according to the theory with a peak near 0 and an approximately uniform distribution throughout the interval [0 1]. Benjamini-Hochberg adjusted p-values (bottom left) do not look according to the theoretical distribution, thus Benjamini-Hochberg adjusted may not be appropriate."}
 mybreaks = seq(0,1, by=.05)
 # adjustment for permutation test is done by stretching out values on the 
 # interval [0 1]  as expected in a theoretical p-value distribution
@@ -527,22 +477,13 @@ hist(p.adjust(comb_MBDE$P_val, method='BH'), breaks=mybreaks,
 
 ```
 
-**Figure 10. P-value distributions for unadjusted and adjusted p-values.** 
-Adjusted p-values (top right) look as expected according to the theory with 
-a peak near 0 and an approximately uniform distribution throughout the 
-interval [0 1]. Benjamini-Hochberg adjusted p-values (bottom left) do not look 
-according to the theoretical distribution, thus Benjamini-Hochberg adjusted 
-may not be appropriate. 
-
-```{r}
+```{r, fig.cap="Distribution of p-values and fold changes for combined multi-matrix analysis of Mouse and Human."}
 # horizontal streaks correspond to where a permutation test produces 0 or 
 # very small value, these are reset to improve visualization
 par(mfcol=c(1,1)) # Volcano generally look better for larger dataset... 
 plot_volcano_wLab(comb_MBDE$FC, comb_MBDE$BH_P_val, comb_MBDE$GeneID, 
                   FC_cutoff=1.2, PV_cutoff=.05, 'CG vs mCG')  
 ```
-
-**Figure 11. Distribution of p-values and fold changes for combined multi-matrix analysis of Mouse and Human.**    
 
 ## Model-Based Differential Expression Analysis for proteins observed only in Human
 
@@ -551,7 +492,7 @@ Differential Expression Analysis, so no analysis for this subset.
 
 ## Model-Based Differential Expression Analysis for proteins observed only in Mouse
 
-```{r warning=FALSE}
+```{r warning=FALSE, fig.cap="Distribution of p-values and fold changes for differential expression analysis in Mouse."}
 # subset_data contains "sub_unique_mm_list"  "sub_unique_prot.info" lists 
 # for each dataset in the order provided to subset function
 mms_mm_dd = subset_data$sub_unique_mm_list[[1]] # Mouse
@@ -571,9 +512,6 @@ plot_volcano_wLab(DE_mCG_CG_mm_dd$FC, DE_mCG_CG_mm_dd$BH_P_val,
                   DE_mCG_CG_mm_dd$GeneID, FC_cutoff=FCval, 
                   PV_cutoff=.05, 'Mouse specific - CG vs mCG') 
 ```
-
-**Figure 12. Distribution of p-values and fold changes for differential expression analysis in Mouse.** 
-
 
 ```{r, results='asis', echo=FALSE}
 cat("\\newpage")
@@ -646,13 +584,10 @@ presAbs_comb=prot_level_multiMat_PresAbs(mm_list=subset_presAbs$sub_mm_list,
 proc.time() - ptm
 ```
 
-```{r}
+```{r, fig.cap="Distribution of p-values and fold changes for differential expression in the combined analysis of Human and Mouse data in CG context."}
 plot_volcano_wLab(presAbs_comb$FC, presAbs_comb$BH_P_val, presAbs_comb$GeneID, 
                   FC_cutoff=.5, PV_cutoff=.05, 'Combined Pres/Abs CG vs mCG') 
 ```
-
-**Figure 13. Distribution of p-values and fold changes for differential expression in the combined analysis of Human and Mouse data in CG context.**
-
 
 ```{r}
 # just checking the numbers here
@@ -665,7 +600,7 @@ unique(subset_presAbs$sub_unique_prot.info[[2]]$ProtID)# 5
 
 ## Presence/Absence analysis for proteins found only in Mouse
 
-```{r}
+```{r, fig.cap="Distribution of p-values and fold changes for the presence/absence analysis in Mouse data in CG context."}
 mm_presAbs = peptideLevel_PresAbsDE(subset_presAbs$sub_unique_mm_list[[1]], 
                                     treats[[1]], 
                                     subset_presAbs$sub_unique_prot.info[[1]], 
@@ -675,12 +610,9 @@ plot_volcano_wLab(mm_presAbs$FC, mm_presAbs$BH_P_val, mm_presAbs$GeneID,
                   FC_cutoff=.5, PV_cutoff=.05, 'MM Pres/Abs CG vs mCG') 
 ```
 
-**Figure 14. Distribution of p-values and fold changes for the presence/absence 
-analysis in Mouse data in CG context.**
-
 ## Presence/Absence analysis for proteins found only in Human
 
-```{r}
+```{r, Distribution of p-values and fold changes for the presence/absence analysis in Human data in CG context.}
 hs_presAbs = peptideLevel_PresAbsDE(subset_presAbs$sub_unique_mm_list[[2]], 
                                     treats[[2]], 
                                     subset_presAbs$sub_unique_prot.info[[2]], 
@@ -691,8 +623,6 @@ plot_volcano_wLab(hs_presAbs$FC, hs_presAbs$BH_P_val, hs_presAbs$GeneID,
 
 ```
 
-**Figure 15. Distribution of p-values and fold changes for the presence/absence 
-analysis in Human data in CG context.**  
 
 \newline
 
@@ -711,6 +641,7 @@ Bioinformatics, 2017. 33(1): p. 17-25.
 \newline
 
 # R Session Information
+
 ```{r}
 sessionInfo()
 ```
