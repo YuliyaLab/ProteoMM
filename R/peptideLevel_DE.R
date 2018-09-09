@@ -14,7 +14,7 @@
 #' level as desribed in
 #' Karpievitch et al. 2009 "A statistical framework for protein quantitation in
 #' bottom-up MS-based proteomics" Bioinformatics.
-#' @param mm m x n matrix of intensities, number of peptides x number of samples
+#' @param mm m x n matrix of intensities, num peptides x num samples
 #' @param treatment vector indicating the treatment group
 #'                  of each sample ie [1 1 1 1 2 2 2 2...]
 #' @param prot.info 2+ colum data frame of peptide ID, protein ID, etc. columns
@@ -66,7 +66,7 @@ peptideLevel_DE = function(mm, treatment, prot.info, pr_ppos=2)
   de_ret = NULL
   u_prot_info = NULL
   ll = length(all.proteins)
-  for (kk in seq(1,ll)) {
+  for (kk in seq_len(ll)) {
     prot = all.proteins[kk]
     pmid.matches = prot.info[prot.info[,pr_ppos]==prot,1]
     curr_prot.info = prot.info[prot.info[,pr_ppos]==prot,]
@@ -82,7 +82,7 @@ peptideLevel_DE = function(mm, treatment, prot.info, pr_ppos=2)
     n.peptide = nrow(y_raw)
     yy = as.vector(t(y_raw))
     ## n = length(yy)
-    peptide = as.factor(rep(seq(1,n.peptide),
+    peptide = as.factor(rep(seq_len(n.peptide),
                             each=dim(data.frame(treatment))[1])) # used below
     # keep track of prIDs here
     curr_prot.info = curr_prot.info[kk,] # possibly a subset
@@ -131,8 +131,8 @@ peptideLevel_DE = function(mm, treatment, prot.info, pr_ppos=2)
 #' Plot Raw, Normalized and Normalized & Imputed peptide trends for a protein
 #' @param mm matrix of raw intensities
 #' @param prot.info metadata for the intensities in mm
-#' @param sorted_norm_m normalized intensities, possibly fewer than in mm due to
-#'        filtering out peptides with fewer than one
+#' @param sorted_norm_m normalized intensities, possibly fewer than in mm due 
+#'        to filtering out peptides with fewer than one
 #'        observation per treatment group
 #' @param sorted_prot.info metadata for the intensities in sorted_norm_m
 #' @param imp_mm imputed intensities (post normalization)
@@ -158,7 +158,7 @@ peptideLevel_DE = function(mm, treatment, prot.info, pr_ppos=2)
 #' 
 #' set.seed(135)
 #' hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
-#' hs_m_ints_eig1$h.c = 2 # visually looks like there are 2 bias trends at least
+#' hs_m_ints_eig1$h.c = 2 # looks like there are 2 bias trends at least
 #' hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)
 #' hs_prot.info = hs_m_ints_norm$normalized[,metaCols]
 #' hs_norm_m =  hs_m_ints_norm$normalized[,intsCols]
@@ -204,7 +204,6 @@ plot_3_pep_trends_NOfile = function(mm, prot.info, sorted_norm_m,
   ylim_max = max(max(tmp, na.rm=TRUE), max(tmp2, na.rm=TRUE))
   myylim = c(ylim_min-.2, ylim_max+.2) # give a bit of margin
 
-  # print(paste(myylim, sep=' '))
   main_title = paste(gene_name, ' (',
                      prot_to_plot, ') Normalized & Imputed', sep='')
   graphics::par(mfcol=c(1,3))
@@ -212,7 +211,7 @@ plot_3_pep_trends_NOfile = function(mm, prot.info, sorted_norm_m,
   # may need to transpose ylim will be dynamically set here,
   # and kept for the other plots
   graphics::matplot(t(tmp), type="l", main=main_title, xaxt = "n", ylim=myylim)
-  graphics::axis(1, at=seq(1,length(mylabs)), labels=mylabs, las=3)
+  graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs, las=3)
   graphics::matpoints(t(tmp), type="p", pch='*') # , ylim=c(15,35))
   graphics::lines(colMeans(tmp,na.rm = TRUE), lwd=3, col='black')
   limits = graphics::par("usr")  # upper and low ylim and upper and lower xlim
@@ -228,15 +227,15 @@ plot_3_pep_trends_NOfile = function(mm, prot.info, sorted_norm_m,
   main_title = paste(gene_name, ' (', prot_to_plot, ') Normalized', sep='')
   graphics::matplot(t(tmp), type="l", pch='19',  main=main_title,
           ylim=myylim, xlim=myxlim, xaxt = "n") # may need to transpose
-  graphics::axis(1, at=seq(1,length(mylabs)), labels=mylabs, las=3)
+  graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs, las=3)
   graphics::matpoints(t(tmp), type="p", pch='*')
   graphics::lines(colMeans(tmp,na.rm = TRUE), lwd=3, col='black')
 
 
   main_title = paste(gene_name, ' (', prot_to_plot, ') Raw', sep='')
   # may need to transpose
-  graphics::matplot(t(tmp2), type="l", main=main_title, ylim=myylim, xaxt = "n")
-  graphics::axis(1, at=seq(1,length(mylabs)), labels=mylabs, las=3)
+  graphics::matplot(t(tmp2), type="l", main=main_title, ylim=myylim, xaxt="n")
+  graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs, las=3)
   graphics::matpoints(t(tmp2), type="p", pch='*') # , ylim=c(15,35))
   graphics::lines(colMeans(tmp2,na.rm = TRUE), lwd=3, col='black')
   graphics::par(mar=c(3,3,3,3))
@@ -269,8 +268,8 @@ plot_1prot = function(mm, prot.info, prot_to_plot, prot_to_plot_col,
   }
   # may need to transpose ylim will be dynamically set here,
   # and kept for the other plots
-  graphics::matplot(t(tmp), type="l", main=prot_to_plot, xaxt = "n", col=colors)
-  graphics::axis(1, at=seq(1,length(mylabs)), labels=mylabs, las=3)
+  graphics::matplot(t(tmp), type="l", main=prot_to_plot, xaxt="n", col=colors)
+  graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs, las=3)
   graphics::matpoints(t(tmp), type="p", pch='*', col=colors)
   graphics::lines(colMeans(tmp,na.rm = TRUE), lwd=3, col='black')
   graphics::par(mar=c(3,3,3,3))
@@ -306,13 +305,13 @@ plot_3_peptide_trends = function(mm, prot.info, sorted_norm_m,
                      ') Normalized & Imputed', sep='')
 
   outfnames_png = paste(gene_name, '_', prot_to_plot, '_3pepTrends.png',sep='')
-  grDevices::png(outfnames_png, width = 20, height = 6.4, units='in', res = 400)
+  grDevices::png(outfnames_png, width = 20, height = 6.4, units='in', res=400)
   # R cannot figue out how & when res is specifed... (?)
   graphics::par(mfcol=c(1,3))
-  graphics::matplot(t(tmp), type="l", main=main_title, xaxt = "n", ylim=myylim)
+  graphics::matplot(t(tmp), type="l", main=main_title, xaxt="n", ylim=myylim)
   # may need to transpose ylim will be dynamically set here,
   # and kept for the other plots
-  graphics::axis(1, at=seq(1,length(mylabs)), labels=mylabs)
+  graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs)
   graphics::matpoints(t(tmp), type="p", pch='*') # , ylim=c(15,35))
   graphics::lines(colMeans(tmp,na.rm = TRUE), lwd=3, col='black')
   limits = graphics::par("usr")  # upper and low ylim and upper and lower xlim
@@ -328,15 +327,15 @@ plot_3_peptide_trends = function(mm, prot.info, sorted_norm_m,
   main_title = paste(gene_name, ' (', prot_to_plot, ') Normalized', sep='')
   graphics::matplot(t(tmp), type="l", pch='19',  main=main_title,
           ylim=myylim, xlim=myxlim, xaxt = "n") # may need to transpose
-  graphics::axis(1, at=seq(1,length(mylabs)), labels=mylabs)
+  graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs)
   graphics::matpoints(t(tmp), type="p", pch='*')
   graphics::lines(colMeans(tmp,na.rm = TRUE), lwd=3, col='black')
 
 
   main_title = paste(gene_name, ' (', prot_to_plot, ') Raw', sep='')
   # may need to transpose
-  graphics::matplot(t(tmp2), type="l", main=main_title, ylim=myylim, xaxt = "n")
-  graphics::axis(1, at=seq(1,length(mylabs)), labels=mylabs)
+  graphics::matplot(t(tmp2), type="l", main=main_title, ylim=myylim, xaxt="n")
+  graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs)
   graphics::matpoints(t(tmp2), type="p", pch='*') # , ylim=c(15,35))
   graphics::lines(colMeans(tmp2,na.rm = TRUE), lwd=3, col='black')
   grDevices::dev.off()
@@ -349,7 +348,7 @@ get1sttoken = function(ids)
 {
   ll = length(ids) # 22780
   prots = NULL
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     tt_spl = strsplit(ids[ii], ';')
     prots = c(prots, c(tt_spl[[1]][1]))
   }
@@ -358,13 +357,13 @@ get1sttoken = function(ids)
 
 
 # function takes a vector of string gene IDs possibly separated by a ';'
-# and returns a vector of the same lenfth with the first gene ID
+# and returns a vector of the same length with the first gene ID
 # with a '+' if more than 1 gene ID was present
 get1sttokenPlus = function(ids)
 {
   ll = length(ids)
   prots = NULL
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     tt_spl = strsplit(ids[ii], ';')
     tt = tt_spl[[1]][1]
     if(length(tt_spl[[1]]) > 1) {
@@ -382,7 +381,7 @@ get1sttokenPlus = function(ids)
 clip_protID_end = function(ids){
   ll = length(ids)
   prots = vector('character', length = ll)
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     #if(ii %/% 1000 != 0) { print(ii) }
     ppos = regexpr("-", ids[ii], fixed=TRUE)[1]
     if(ppos != -1) {
@@ -400,8 +399,8 @@ clip_protID_end = function(ids){
 ##  'Potential.contaminant'), colsCheckSymbol=c('+', '+'))
 ## check for the presence of '+' sign in the
 ## specificed columns but column number
-remove_contaminats_symbol = function(dd, colsCheck = c('Reverse',
-                                                       'Potential.contaminant'),
+remove_contaminats_symbol = function(dd, colsCheck=c('Reverse',
+                                                     'Potential.contaminant'),
                                      colsCheckSymbol=c('+', '+') )
 {
   # get column indeces for the specified column names,
@@ -409,12 +408,12 @@ remove_contaminats_symbol = function(dd, colsCheck = c('Reverse',
   # access 'dd' by the column index to check for '+'
   cols1 = colnames(dd)
   ll = length(colsCheck)
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     ppos = cols1 == colsCheck[ii]
     # position of the column we need to check
-    colToCheck = seq(1,length(cols1))[ppos]
+    colToCheck = seq_len(length(cols1))[ppos]
     tt1 = dd[,colToCheck] == '+'
-    print(paste('Removing ', sum(tt1), 'rows via ', colsCheck[ii], 'column') )
+    message('Removing ', sum(tt1), ' rows via ', colsCheck[ii], ' column')
     dd = dd[!tt1,]
   }
   return(dd)
@@ -437,12 +436,13 @@ remove_contaminats_prefix = function(dd,
   # to the prefix in the protein names
   cols1 = colnames(dd)
   ll = length(colsCheck)
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     ppos = cols1 == colsCheck[ii]
     # position of the column we need to check
-    colToCheck = seq(1,length(cols1))[ppos]
-    ppos1 = startsWith(as.character(dd[,colToCheck]), colsCheckPrefix[ii])
-    print(paste('Removing ', sum(ppos1), 'rows via ', colsCheck[ii], 'column'))
+    colToCheck = seq_len(length(cols1))[ppos]
+    ppos1 = gdata::startsWith(as.character(dd[,colToCheck]), 
+                              colsCheckPrefix[ii])
+    message('Removing ', sum(ppos1), ' rows via ', colsCheck[ii], ' column')
     dd = dd[!ppos1,]
   }
   return(dd)
@@ -456,7 +456,7 @@ generate_single_geneID = function(dd, colCheck)
 {
   cols1 = colnames(dd)
   ppos = cols1 == colCheck
-  colToCheck = seq(1,length(cols1))[ppos]
+  colToCheck = seq_len(length(cols1))[ppos]
   dd$GeneIDLong = dd[,colToCheck]
   dd$GeneID = get1sttoken(as.character(dd[,colToCheck]) )
   return(dd)
@@ -475,7 +475,7 @@ generate_clipped_ProtID = function(dd, colCheck)
 {
   cols1 = colnames(dd)
   ppos = cols1 == colCheck
-  colToCheck = seq(1,length(cols1))[ppos]
+  colToCheck = seq_len(length(cols1))[ppos]
   dd$ProtIDLong = dd[,colToCheck]
   dd$ProtID = clip_protID_end(as.character(dd[,colToCheck]) )
   return(dd)
@@ -514,7 +514,7 @@ remove_dup_geneIDs = function(db)
   u_dup_genids = unique(db_geneID_dup$GeneID) # 53
   nn = length(u_dup_genids)
   undup_db = NULL
-  for(ii in seq(1,nn)) {
+  for(ii in seq_len(nn)) {
     pcur = db_geneID_dup$GeneID == u_dup_genids[ii]
     cur_gene = db_geneID_dup[pcur,]
     # keep row with ProtID
@@ -554,7 +554,7 @@ make_ID_structure = function(ens_ids) {
   HS$EnsID = vector(mode="list", length=ll)
   HS$ProtID = vector(mode="list", length=ll)
   HS$NumEnsList = vector(mode="numeric", length=ll)
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     HS$GeneID[ii] = ugenes[ii]
     ppos = ens_ids$GeneID == HS$GeneID[ii]
     HS$EnsID[[ii]] = ens_ids$EnsID[ppos]
@@ -602,8 +602,8 @@ match_linker_ids = function(dd1,  linker, l_col) {
   ll1 = length(dd1$EnsID) # 19086
   ll1
   match1 = vector(mode="list", length=ll1)
-  for(ii in seq(1,ll1)) {
-    if(ii%%100 == 0) { print(paste('Processing Gene', as.character(ii) ) ) }
+  for(ii in seq_len(ll1)) {
+    if(ii%%100 == 0) { message('Processing Gene ', as.character(ii) )  }
     ppos = linker[,l_col] %in% dd1$EnsID[[ii]]
     match1[[ii]] = unique(linker[ppos,-l_col])
     linker = linker[!ppos,]
@@ -628,15 +628,16 @@ match_ids = function(dd1, dd2) {
   match_index = 1
   # add index such that we could track the original position of
   # the gene when elements are removed
-  dd2$index = seq(1,ll2)
-  print('Processing Gene 1')
-  for(ii in seq(1,ll1)) {
-    if(ii%%500 == 0) { print(paste('Processing Gene', as.character(ii) ) ) }
-    ll2 = length(dd2$GeneID) # will shrink as we go through the matching process
+  dd2$index = seq_len(ll2)
+  message('Processing Gene 1')
+  for(ii in seq_len(ll1)) {
+    if(ii%%500 == 0) { message('Processing Gene ', as.character(ii) ) }
+    ll2 = length(dd2$GeneID) #will shrink as we go through the matching process
 
-    for(jj in seq(1,ll2)) {
+    for(jj in seq_len(ll2)) {
       ppos = dd1$EnsID[[ii]] %in% dd2$linkedIDs[[jj]]
-      if(sum(ppos) > 0) { # we got a match
+      if (sum(ppos) > 0) {
+        # we got a match
         num_match1[ii] = sum(ppos)
         match1[ii] = match_index
         match_2_index = dd2$index[jj]

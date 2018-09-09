@@ -7,7 +7,7 @@
 peptideLevel_DE(mm, treatment, prot.info, pr_ppos = 2)
 }
 \arguments{
-\item{mm}{m x n matrix of intensities, number of peptides x number of samples}
+\item{mm}{m x n matrix of intensities, num peptides x num samples}
 
 \item{treatment}{vector indicating the treatment group
 of each sample ie [1 1 1 1 2 2 2 2...]}

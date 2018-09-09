@@ -4,17 +4,17 @@
 \alias{plot_3_pep_trends_NOfile}
 \title{Plot peptide trends}
 \usage{
-plot_3_pep_trends_NOfile(mm, prot.info, sorted_norm_m, sorted_prot.info, imp_mm,
-  imp_prot.info, prot_to_plot, prot_to_plot_col, gene_name, gene_name_col,
-  mylabs)
+plot_3_pep_trends_NOfile(mm, prot.info, sorted_norm_m, sorted_prot.info,
+  imp_mm, imp_prot.info, prot_to_plot, prot_to_plot_col, gene_name,
+  gene_name_col, mylabs)
 }
 \arguments{
 \item{mm}{matrix of raw intensities}
 
 \item{prot.info}{metadata for the intensities in mm}
 
-\item{sorted_norm_m}{normalized intensities, possibly fewer than in mm due to
-filtering out peptides with fewer than one
+\item{sorted_norm_m}{normalized intensities, possibly fewer than in mm due 
+to filtering out peptides with fewer than one
 observation per treatment group}
 
 \item{sorted_prot.info}{metadata for the intensities in sorted_norm_m}
@@ -54,7 +54,7 @@ grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
 
 set.seed(135)
 hs_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
-hs_m_ints_eig1$h.c = 2 # visually looks like there are 2 bias trends at least
+hs_m_ints_eig1$h.c = 2 # looks like there are 2 bias trends at least
 hs_m_ints_norm = eig_norm2(rv=hs_m_ints_eig1)
 hs_prot.info = hs_m_ints_norm$normalized[,metaCols]
 hs_norm_m =  hs_m_ints_norm$normalized[,intsCols]

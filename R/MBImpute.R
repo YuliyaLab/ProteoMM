@@ -96,7 +96,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
   imp_prot.info = NULL
   cat("Imputing...\n")
 
-  for (kk in seq(1,length(all.proteins))) {
+  for (kk in seq_len(length(all.proteins))) {
     prot = all.proteins[kk]
     pmid.matches = prot.info[prot.info[,pr_ppos]==prot,1]
 
@@ -119,13 +119,13 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     n.peptide = nrow(y_raw)
     yy = as.vector(t(y_raw))
     nn = length(yy)
-    peptide =rep(seq(1,n.peptide), each=dim(data.frame(treatment))[1])
+    peptide =rep(seq_len(n.peptide), each=dim(data.frame(treatment))[1])
 
     # filter out min.missing
     n.present = array(NA, c(n.peptide, n.u.treatment))
     colnames(n.present) = unique(treatment)
 
-    for(jj in seq(1, n.u.treatment) ){
+    for(jj in seq_len( n.u.treatment) ){
        n.present[,jj] = rowSums(!is.na(y_raw[,treatment==unique(treatment)[jj],
                                              drop=FALSE]))
     }
@@ -137,7 +137,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
 
     # keep track of pepIDs and prIDs here...
     if (nrow(y_raw) == 0) next
-	  peptide = rep(seq(1,n.peptide), each=dim(data.frame(treatment))[1])
+	  peptide = rep(seq_len(n.peptide), each=dim(data.frame(treatment))[1])
 
     # make column names for the n.present matrix
     tmp = unique(treatment)
@@ -150,14 +150,14 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     } else {
       col_names1 = vector('character', nrow_tmp)
       bob = data.frame(lapply(tmp, as.character), stringsAsFactors=FALSE)
-      for(ii in seq(1,nrow_tmp)) {
+      for(ii in seq_len(nrow_tmp)) {
        col_names1[ii] = paste(bob[ii,1], bob[ii,2], sep='_')
       }
     }
 
     # calculate pooled variance for each protein
     grp = array(NA, c(1, n.u.treatment))
-    for (jj in seq(1,n.u.treatment)) {
+    for (jj in seq_len(n.u.treatment)) {
       grp[jj] = sum(n.present[, jj])
     }
     pep_var = 0 # yuliya: was not declared in impute only
@@ -168,7 +168,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     den = 0
     # calculate pooled variance for each peptide
     # if only 1 onservation in a dx group assign the overall variance
-    for(ii in seq(1,n.peptide))
+    for(ii in seq_len(n.peptide))
     {
       # which treatment has more obsertations? - use one of the 2 groups
       pep = yy[peptide==ii]
@@ -204,7 +204,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     # estimate rough model parameters
     # create model matrix for each protein
     # remove any missing values from consideration
-    iii = (seq(1,nn))[is.na(yy)] # positions of the NA's
+    iii = (seq_len(nn))[is.na(yy)] # positions of the NA's
     if (n.peptide != 1){
       X  = stats::model.matrix(~f.peptide + f.treatment,
                         contrasts = list(f.treatment="contr.sum",
@@ -326,7 +326,8 @@ eigen_pi = function(m, toplot=TRUE)
 
   if (toplot){
   st = paste("PI: ", PI)
-  plot(pepmean, propmiss, xlab="x", ylab="y", cex=0.5) #plot data point
+  #plot data point
+  graphics::plot(pepmean, propmiss, xlab="x", ylab="y", cex=0.5) 
   graphics::lines(fit)
   graphics::title("Lowess Regression", sub = st,
       cex.main = 2,   font.main= 3, col.main= "purple",
@@ -354,12 +355,12 @@ protein_var = function(Y_raw, treatment){
   n = length(y)
   n.treatment = length(treatment)
   n.u.treatment = length(unique(treatment))
-  peptide = rep(seq(1, n.peptide), each=n.treatment)
+  peptide = rep(seq_len( n.peptide), each=n.treatment)
 
   n.present = array(NA, c(n.peptide, n.u.treatment))
   colnames(n.present) = unique(treatment)
-  for(i in seq(1,n.peptide)) {
-      for(j in seq(1,n.u.treatment)) {
+  for(i in seq_len(n.peptide)) {
+      for(j in seq_len(n.u.treatment)) {
           n.present[i,j] = sum(!is.na(y[peptide==i &
                                           treatment==unique(treatment)[j]]))
       }
@@ -371,7 +372,7 @@ protein_var = function(Y_raw, treatment){
   # estimate rough model parameters
   # create model matrix for each protein and
   # remove any peptides with missing values
-  ii = seq(1,n)[is.na(y)]
+  ii = seq_len(n)[is.na(y)]
   if (n.peptide != 1){
     X  = stats::model.matrix(~f.peptide + f.treatment,
                       contrasts = list(f.treatment="contr.sum",

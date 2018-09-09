@@ -7,12 +7,12 @@
 peptideLevel_PresAbsDE(mm, treatment, prot.info, pr_ppos = 2)
 }
 \arguments{
-\item{mm}{m x n matrix of intensities, number of peptides x number of samples}
+\item{mm}{m x n matrix of intensities, num peptides x num samples}
 
 \item{treatment}{vector indicating the treatment
 group of each sample ie [1 1 1 1 2 2 2 2...]}
 
-\item{prot.info}{2+ colum data frame of peptide ID, protein ID, etc. columns}
+\item{prot.info}{2+ colum data frame of peptide ID, protein ID, etc columns}
 
 \item{pr_ppos}{- column index for protein ID in
 prot.info. Can restrict to be #2...}
@@ -32,7 +32,7 @@ A list of length two items:
          the g-test, not very useful as depends on
         the direction of the test and can produce all 0's}
   \item{num_peptides}{number of peptides within a protein}
-  \item{metadata}{all columns of metadata from teh matrix that was passed in}
+  \item{metadata}{all columns of metadata from the passed in matrix}
 }
 }
 \description{

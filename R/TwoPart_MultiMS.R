@@ -1,9 +1,9 @@
-################################################################################
+###############################################################################
 # Function to conduct multi-sample two-part test with
 # permutation null distribution
 # Initial implementation date: 22 July 2016
 # Releae data: February 2018
-################################################################################
+###############################################################################
 
 #' hs_peptides - peptide-level intensities for human
 #'
@@ -133,7 +133,7 @@ make_meta = function(mm, use_cols) {
 #'   quantitation in bottom-up MS-based proteomics".  PMID: 19535538
 #'
 #' @param mm a dataframe of raw intensities in format:
-#'  (# peptides)x(# samples + possibly peptide & protein information (metadata))
+#'  (# peptides)x(# samples+possibly peptide & protein information (metadata))
 #'
 #' @param use_cols vector of column indecies that make up the intensities
 #'              usually in sequential order but do not have to be
@@ -244,9 +244,9 @@ plot_volcano = function(FC, PV, FC_cutoff=2, PV_cutoff=.05, figtitle='') {
   xlimits = max(abs(FC)) + .2
   ylimits = max(tmp_y) + .2
   graphics::par(mfcol=c(1,1))
-  plot(tmp_x, tmp_y, pch=20, xlim=c(-xlimits,xlimits), ylim=c(0,ylimits),
-       # add label to significantly different proteins
-  xlab='FC', ylab='-log10(p-value)',  main=figtitle)
+  # add label to significantly different proteins
+  graphics::plot(tmp_x,tmp_y,pch=20,xlim=c(-xlimits,xlimits),ylim=c(0,ylimits),
+                 xlab='FC',ylab='-log10(p-value)',main=figtitle)
   graphics::lines(c(-(xlimits+2),(xlimits+2)), c(-log10(PV_cutoff),
                                        -log10(PV_cutoff)), col='blue')
   # also same as
@@ -318,23 +318,24 @@ plot_volcano_wLab = function(FC, PV, ProtID,
                                  & plotdata$PV < PV_cutoff)
   dim(plotdata)
 
-  ggplot() + geom_point(data=plotdata, aes(x=FC, y=log_PV), alpha=0.5, size=1) +
+  ggplot2::ggplot() + 
+    ggplot2::geom_point(data=plotdata, aes(x=FC, y=log_PV), alpha=0.5, size=1) +
     theme(legend.position = "none") +
     xlab("log2 fold change") +
     ylab("-log10 p-value") +
-    geom_text_repel(data=filter(plotdata, threshold==TRUE),
+    ggrepel::geom_text_repel(data=filter(plotdata, threshold==TRUE),
                     size = 3, alpha=.8, aes(x=FC, y=log_PV, label=ProtID) ) +
-    theme_classic(base_size = 8) +
-    geom_hline(yintercept=-log10(PV_cutoff), col='blue', alpha=.7) +
-    geom_hline(yintercept=-log10(0.1),
+    ggplot2::theme_classic(base_size = 8) +
+    ggplot2::geom_hline(yintercept=-log10(PV_cutoff), col='blue', alpha=.7) +
+    ggplot2::geom_hline(yintercept=-log10(0.1),
                col='blue', linetype="dashed", alpha=.7) +
-    geom_vline(xintercept=-FC_cutoff, col='blue', alpha=.7) +
-      geom_vline(xintercept=FC_cutoff, col='blue', alpha=.7)
+    ggplot2::geom_vline(xintercept=-FC_cutoff, col='blue', alpha=.7) +
+    ggplot2::geom_vline(xintercept=FC_cutoff, col='blue', alpha=.7)
 }
 
 # DESCRIPTION
 # This function calculates multi-sample two-part tests to test for a difference
-# in means and proportions between two groups across multiple biological samples
+# in means and proportions between 2 groups across multiple biological samples
 # P-values are generated using a permutation null distribution.
 #
 # USAGE
@@ -397,10 +398,10 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 #'              this will take a while, test code
 #'              with fewer permutations
 #' @param dataset_suffix vector of character strings that corresponds to the
-#'        dataset being analysed. Same length as mm_list. Names will be appended
-#'        to the columns names that will be generated for each analysed dataset.
-#'        For example, if analysing mouse and human data this vector may be:
-#'        c('Mouse', 'Human')
+#'       dataset being analysed. Same length as mm_list. Names will be appended
+#'       to the columns names that will be generated for each analysed dataset.
+#'       For example, if analysing mouse and human data this vector may be:
+#'       c('Mouse', 'Human')
 #' @return data frame with the following columns
 #' \describe{
 #'   \item{protIDused}{Column containing the protien IDs used to
@@ -507,7 +508,7 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 prot_level_multi_part = function(mm_list, treat, prot.info,
                                   prot_col_name, nperm=500, dataset_suffix){
   warning("This function uses random namber generator. For reproducibility use 
-          set.seed(12345) with your choce of parameter", immediate.=TRUE)
+          set.seed(12345) with your choce of numeric parameter",immediate.=TRUE)
   
   # select proteins that were detected in each experiment
   # make a list of unique protein IDs for each matrix in the list mm_list
@@ -526,7 +527,7 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
   tt = colnames(sub_prot.info[[1]])
   ttt = tt == prot_col_name
   # should be position of the column that was passed in for ID
-  pos_prot_id_col = seq(1,length(tt))[ttt]
+  pos_prot_id_col = seq_len(length(tt))[ttt]
 
   ## Tstat = CalcT(data, groups)  # my test here return t-stat
   # for each dataset loop through, compute, and add up t-stat values
@@ -574,19 +575,19 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
   print('Perfoming permutation test')
 
   tstat_perm = list()
-  for(ii in seq(1,nsets)) {
+  for(ii in seq_len(nsets)) {
     print(paste('Dataset', as.character(ii) ) )
     tstat_perm[[ii]] = NULL
-    for(jj in seq(1,nperm)) {
+    for(jj in seq_len(nperm)) {
       # get permuted labels for each iteration, then compute T_p
       perm_pos = sample(length(treat[[ii]]), length(treat[[ii]]) )
       tmp = peptideLevel_DE(sub_mm_list[[ii]],
                             treat[[ii]][perm_pos], sub_prot.info[[ii]],
                             pr_ppos=pos_prot_id_col)
       if(jj == 1) {
-        tstat_perm[[ii]] =  as.matrix(as.double(tmp[,5]))
+        tstat_perm[[ii]] = as.matrix(as.double(tmp[,5]))
       } else {
-        tstat_perm[[ii]] = cbind(tstat_perm[[ii]],as.matrix(as.double(tmp[,5])))
+        tstat_perm[[ii]] =cbind(tstat_perm[[ii]],as.matrix(as.double(tmp[,5])))
       }
     }
   }
@@ -600,16 +601,16 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
   num_prot = dim(tstat)[1]
   p_vals = vector('numeric', length=num_prot)
   pos_stat_pos = sum_tstat >= 0
-  for(ii in seq(1,2)) { # positive and negative values separately
+  for(ii in seq_len(2)) { # positive and negative values separately
     if(ii == 1) {
       ppos = which(pos_stat_pos)
-      for(kk in seq(1,length(ppos))) {
+      for(kk in seq_len(length(ppos))) {
         p_vals[ppos[kk]] = (.5+sum(T_perm[ppos[kk],] >=
                                      sum_tstat[ppos[kk]])) / (nperm+1)
       }
     } else {
       ppos = which(!pos_stat_pos)
-      for(kk in seq(1,length(ppos))) {
+      for(kk in seq_len(length(ppos))) {
         p_vals[ppos[kk]] = (.5+ sum(T_perm[ppos[kk],] <
                                       sum_tstat[ppos[kk]])) / (nperm+1)
       }
@@ -650,10 +651,10 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
 #' Significance is estimated using a g-test which is suitable
 #' for two treatment groups only.
 #'
-#' @param mm m x n matrix of intensities, number of peptides x number of samples
+#' @param mm m x n matrix of intensities, num peptides x num samples
 #' @param treatment vector indicating the treatment
 #'                  group of each sample ie [1 1 1 1 2 2 2 2...]
-#' @param prot.info 2+ colum data frame of peptide ID, protein ID, etc. columns
+#' @param prot.info 2+ colum data frame of peptide ID, protein ID, etc columns
 #' @param pr_ppos - column index for protein ID in
 #'               prot.info. Can restrict to be #2...
 #'
@@ -671,7 +672,7 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
 #'          the g-test, not very useful as depends on
 #'         the direction of the test and can produce all 0's}
 #'   \item{num_peptides}{number of peptides within a protein}
-#'   \item{metadata}{all columns of metadata from teh matrix that was passed in}
+#'   \item{metadata}{all columns of metadata from the passed in matrix}
 #'}
 #' @examples
 #' # Load mouse dataset
@@ -742,13 +743,13 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
   u_treat = unique(treatment)
   numgrps = length(u_treat)
   numeeachgroup =  vector('numeric', length=numgrps)
-  for(ii in seq(1,numgrps)) {
+  for(ii in seq_len(numgrps)) {
     numeeachgroup[ii] = sum(treatment == u_treat[ii])
   } # needed for the FC estimation
 
   de_ret = NULL
   u_prot_info = NULL
-  for (kk in seq(1,length(all.proteins))) {
+  for (kk in seq_len(length(all.proteins))) {
     prot = all.proteins[kk]
     pmid.matches = prot.info[prot.info[,pr_ppos]==prot,1]
     curr_prot.info = prot.info[prot.info[,pr_ppos]==prot,]
@@ -814,7 +815,7 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
   de_ret$prot.info = u_prot_info
 
   num_obs =  matrix(0, length(all.proteins), numgrps)
-  for(ii in seq(1,numgrps)) {
+  for(ii in seq_len(numgrps)) {
     num_obs[,ii] = de_ret$DE_res$num_peptides * numeeachgroup[ii]
   }
   percmiss = nummiss / num_obs
@@ -959,7 +960,7 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
 #'              FC_cutoff=.5, PV_cutoff=.05,
 #'              'Combined Pres/Abs CG vs mCG')
 #'
-prot_level_multiMat_PresAbs = function(mm_list, treat, prot.info, prot_col_name,
+prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
                                        nperm=500, dataset_suffix){
   warning("This function uses random namber generator. For reproducibility use 
           set.seed(12345) with your choce of parameter", immediate.=TRUE)
@@ -981,7 +982,7 @@ prot_level_multiMat_PresAbs = function(mm_list, treat, prot.info, prot_col_name,
   tt = colnames(sub_prot.info[[1]])
   ttt = tt == prot_col_name
   # should be position of the column that was passed in for ID
-  pos_prot_id_col = seq(1,length(tt))[ttt]
+  pos_prot_id_col = seq_len(length(tt))[ttt]
   tmp = peptideLevel_PresAbsDE(sub_mm_list[[1]],
                                treat[[1]], sub_prot.info[[1]],
                                pr_ppos=pos_prot_id_col)
@@ -1029,10 +1030,10 @@ prot_level_multiMat_PresAbs = function(mm_list, treat, prot.info, prot_col_name,
   print('Perfoming permutation test')
 
   tstat_perm = list()
-  for(ii in seq(1,nsets)) {
+  for(ii in seq_len(nsets)) {
     print(paste('Dataset', as.character(ii) ) )
     tstat_perm[[ii]] = NULL
-    for(jj in seq(1,nperm)) {
+    for(jj in seq_len(nperm)) {
       # get permuted labels for each iteration, then compute T_p
       perm_pos = sample(length(treat[[ii]]), length(treat[[ii]]) )
       tmp = peptideLevel_PresAbsDE(sub_mm_list[[ii]],
@@ -1057,17 +1058,17 @@ prot_level_multiMat_PresAbs = function(mm_list, treat, prot.info, prot_col_name,
   num_prot = dim(tstat)[1]
   p_vals = vector('numeric', length=num_prot)
   pos_stat_pos = sum_tstat >= 0
-  for(ii in seq(1,num_prot)) { # positive and negative values separately
+  for(ii in seq_len(num_prot)) { # positive and negative values separately
     if(ii == 1) {
     p_vals[ii] = (.5+ sum(T_perm[ii,] >= sum_tstat[ii])) / (nperm+1)
       ppos = which(pos_stat_pos)
-      for(kk in seq(1,length(ppos))) {
+      for(kk in seq_len(length(ppos))) {
         p_vals[ppos[kk]] = (.5+ sum(T_perm[ppos[kk],] >=
                                       sum_tstat[ppos[kk]])) / (nperm+1)
       }
     } else {
       ppos = which(!pos_stat_pos)
-      for(kk in seq(1,length(ppos))) {
+      for(kk in seq_len(length(ppos))) {
         p_vals[ppos[kk]] = (.5+ sum(T_perm[ppos[kk],] <
                                       sum_tstat[ppos[kk]])) / (nperm+1)
       }
@@ -1216,13 +1217,13 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
   numuprots = vector('numeric', ll)
   common_list = ''
   uprots = list()
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     uprots[[ii]] = unique(prot.info[[ii]][,c(prot_col_name)])
     numuprots = length(uprots[[ii]])
     if(ii == 1) {
       common_list = uprots[[ii]]
     } else {
-      # match protein names across multiple datasets, keep only overlapping ones
+      # match protein names across multiple datasets, keep only overlapping 
       common_list = intersect(common_list,uprots[[ii]])
     }
   }
@@ -1236,7 +1237,7 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
   sub_unique_mm_list = list()
   sub_unique_prot.info = list()
 
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     ppos = prot.info[[ii]][,c(prot_col_name)] %in% common_list
     sub_mm_list[[ii]] = mm_list[[ii]][ppos,]
     sub_prot.info[[ii]] = prot.info[[ii]][ppos,]
@@ -1247,7 +1248,8 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
     # for future comparisons.
     # Sort in increasing order of ID being used by the values in ret$ix
     # ret = sort(sub_prot.info[[ii]][,c(prot_col_name)], index.return=TRUE)
-    indx = mixedorder(as.character(sub_prot.info[[ii]][,c(prot_col_name)]))
+    indx = gtools::mixedorder(as.character(
+                    sub_prot.info[[ii]][,c(prot_col_name)]))
     sub_mm_list[[ii]] = sub_mm_list[[ii]][indx,]
     sub_prot.info[[ii]] = sub_prot.info[[ii]][indx,]
   }
@@ -1360,7 +1362,7 @@ get_presAbs_prots = function(mm_list, prot.info,
   ll = length(mm_list)
   presAbs_ints = list()
   presAbs_prot.info = list()
-  for(ii in seq(1,ll)) {
+  for(ii in seq_len(ll)) {
     # negation of these are what we want...
     prots_removed_pos = prot.info[[ii]][,c(prot_col_name)] %in%
       protnames_norm[[ii]]

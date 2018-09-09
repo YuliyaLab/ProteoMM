@@ -19,7 +19,7 @@ or a data frame of factors, eg:
 IMPORTANT: pepIDs must be unique identifiers and will be used
 as Row Names
 If normalizing non-proteomics data, create a column such as:
-paste('ID_',seq(1:num_rows), sep='')
+paste('ID_',seq_len(num_rows), sep='')
 Same can be dome for ProtIDs, these are not used for
 normalization but are kept for future analyses}
 
@@ -75,9 +75,9 @@ m_logInts = convert_log2(m_logInts)
 grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
 
 # ATTENTION: SET RANDOM NUMBER GENERATOR SEED FOR REPRODUCIBILITY !!
-set.seed(123) # Bias trends are determined via a permutaion, results may 
-# vary slightly if a different seed is used, such as when set.seed() function
-# is not used
+set.seed(123) # Bias trends are determined via a permutaion, results may
+# vary slightly if a different seed is used, such as when set.seed()
+# function is not used
 
 mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 mm_m_ints_eig1$h.c # check the number of bias trends detected

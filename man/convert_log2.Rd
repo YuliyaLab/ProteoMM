@@ -8,7 +8,7 @@ convert_log2(mm, use_cols)
 }
 \arguments{
 \item{mm}{a dataframe of raw intensities in format:
-(# peptides)x(# samples + possibly peptide & protein information (metadata))}
+(# peptides)x(# samples+possibly peptide & protein information (metadata))}
 
 \item{use_cols}{vector of column indecies that make up the intensities
 usually in sequential order but do not have to be
