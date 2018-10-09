@@ -70,11 +70,11 @@
 #' @export
 MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
                     compute_pi=FALSE){
-  warning("This function uses random namber generator. For reproducibility use 
+  warning("This function uses random number generator. For reproducibility use 
           set.seed(12345) with your choce of parameter", immediate.=TRUE)
   # calculate PI or use one passed in as parameter:
   if (compute_pi){
-    print('Estimating Pi')
+    message('Estimating Pi')
   	my.pi = eigen_pi(mm, toplot=TRUE)
   }
 
@@ -94,7 +94,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
   all.proteins = unique(prot.info[,pr_ppos])
   y_imputed = NULL
   imp_prot.info = NULL
-  cat("Imputing...\n")
+  message("Imputing...\n")
 
   for (kk in seq_len(length(all.proteins))) {
     prot = all.proteins[kk]
@@ -130,7 +130,8 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
                                              drop=FALSE]))
     }
     # remove peptides with completely missing group(s)
-    present.min = apply(n.present, 1, min)
+    # non-vectorized: present.min = apply(n.present, 1, min)
+    present.min = matrixStats::rowMins(n.present)
     ii = present.min > 0
     # reassign Y_raw to a submatrix of 1+ observations in each group
     y_raw = y_raw[ii,,drop=FALSE]
@@ -141,7 +142,7 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
 
     # make column names for the n.present matrix
     tmp = unique(treatment)
-    # yuliya: this does not work if a factor
+    # this does not work if a factor
     nrow_tmp = dim(tmp)[1]
     # R does not remove the variable col_names1 from name
     # space outside of the if/else..
@@ -229,7 +230,8 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     delta.y = as.numeric(1/sqrt(pep_var*peptides.missing))
     dd = delta.y[as.numeric(peptide)]
 
-    c_hat = apply(y_raw,1,min,na.rm=TRUE)
+    # non-vectorized option: c_hat = apply(y_raw,1,min,na.rm=TRUE)
+    c_hat = matrixStats::rowMins(as.matrix(y_raw), na.rm=TRUE)
     c_h = c_hat[as.numeric(peptide)]
 
     if(n.peptide==1){
@@ -243,7 +245,6 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
 
     zeta = dd*(c_h - y.predict)
     PHI = stats::pnorm(zeta, 0, 1)
-    # prob.cen = stats::pnorm(zeta, 0, 1)/(my.pi + (1-my.pi)*pnorm(zeta,0,1))
     prob.cen = PHI / ( (my.pi + (1-my.pi) * PHI) )
 
     choose.cen = stats::runif(nn) < prob.cen
@@ -259,12 +260,12 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
       ss = sigma[set.cen]
       cutoff = c_h[set.cen] # rep(c.guess, nn)[set.cen]
       # Apri 9, 2018 - added lo=0 cutoff, truncated normal at both ends
+      # intensities below 0 are not valid
       y.impute[set.cen] = rnorm.trunc(sum(set.cen), mus, ss, lo=0, hi=cutoff)
     }
     if(sum(set.mar) > 0) { # randomly missing
       # Apri 9, 2018 - added lo=0 cutoff, truncated normal at 0
       # mainly for multiplexed experiments where abundances may be lower
-      # y.impute[set.mar] = stats::rnorm(nn, y.predict, sigma)[set.mar]
       y.impute[set.mar] = rnorm.trunc(sum(set.mar), y.predict[set.mar], 
                                       sigma[set.mar], lo=0)
     }
@@ -305,13 +306,14 @@ eigen_pi = function(m, toplot=TRUE)
   # (1) compute 1) ave of the present values from each petide
   #             2) number of missing and present values for each peptide
 
-  #remove completely missing rows
+  # remove completely missing rows
   m = m[rowSums(m, na.rm=TRUE)!=0,]
 
-  pepmean = apply(m, 1, mean, na.rm=TRUE)
+  pepmean = matrixStats::rowMeans2(as.matrix(m), na.rm=TRUE)
+  # non-vectorized version: pepmean = apply(m, 1, mean, na.rm=TRUE)
   propmiss = rowSums(is.na(m))/ncol(m)
 
-  smooth_span = (0.4)
+  smooth_span = 0.4
   fit = stats::lowess(pepmean, propmiss, f=smooth_span)
   PI = fit$y[fit$x==max(pepmean)]
 
@@ -326,7 +328,7 @@ eigen_pi = function(m, toplot=TRUE)
 
   if (toplot){
   st = paste("PI: ", PI)
-  #plot data point
+  # plot data point
   graphics::plot(pepmean, propmiss, xlab="x", ylab="y", cex=0.5) 
   graphics::lines(fit)
   graphics::title("Lowess Regression", sub = st,

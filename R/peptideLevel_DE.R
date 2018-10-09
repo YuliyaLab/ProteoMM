@@ -1,4 +1,4 @@
-# Differetial Expression Nalsyis for follow after Model-based imputaion
+# Differetial Expression Analsyis to do after Model-based imputaion
 #
 # Ref:  "A statistical framework for protein quantitation in bottom-up MS-based
 #        proteomics. Karpievitch Y, Stanley J, Taverner T, Huang J, Adkins JN,
@@ -81,7 +81,7 @@ peptideLevel_DE = function(mm, treatment, prot.info, pr_ppos=2)
     y_raw = mm[idx.prot,,drop=FALSE]
     n.peptide = nrow(y_raw)
     yy = as.vector(t(y_raw))
-    ## n = length(yy)
+
     peptide = as.factor(rep(seq_len(n.peptide),
                             each=dim(data.frame(treatment))[1])) # used below
     # keep track of prIDs here
@@ -233,7 +233,6 @@ plot_3_pep_trends_NOfile = function(mm, prot.info, sorted_norm_m,
 
 
   main_title = paste(gene_name, ' (', prot_to_plot, ') Raw', sep='')
-  # may need to transpose
   graphics::matplot(t(tmp2), type="l", main=main_title, ylim=myylim, xaxt="n")
   graphics::axis(1, at=seq_len(length(mylabs)), labels=mylabs, las=3)
   graphics::matpoints(t(tmp2), type="p", pch='*') # , ylim=c(15,35))
@@ -382,7 +381,6 @@ clip_protID_end = function(ids){
   ll = length(ids)
   prots = vector('character', length = ll)
   for(ii in seq_len(ll)) {
-    #if(ii %/% 1000 != 0) { print(ii) }
     ppos = regexpr("-", ids[ii], fixed=TRUE)[1]
     if(ppos != -1) {
       prots[ii] = substr(ids[ii], 1, (ppos-1) )
@@ -394,9 +392,7 @@ clip_protID_end = function(ids){
 }
 
 
-## function
-## remove_contaminats(dd, colsCheck = c('Reverse',
-##  'Potential.contaminant'), colsCheckSymbol=c('+', '+'))
+
 ## check for the presence of '+' sign in the
 ## specificed columns but column number
 remove_contaminats_symbol = function(dd, colsCheck=c('Reverse',
@@ -420,10 +416,7 @@ remove_contaminats_symbol = function(dd, colsCheck=c('Reverse',
 }
 
 
-## function
-## remove_contaminats(dd, colsCheck = c('Reverse', 'Potential.contaminant'),
-## colsCheckSymbol=c('+', '+'))
-## check for the presence of '+' sign in the
+## check for the presence of 'REV_', 'CON_' in the
 ## specificed columns but column number
 remove_contaminats_prefix = function(dd,
                                      colsCheck = c('Leading.razor.protein',
@@ -487,27 +480,27 @@ generate_clipped_ProtID = function(dd, colCheck)
 # on rare occasion there exist 2 EnsIDs for the same
 # GeneID but for different ProtID
 # or valid protein ID in one row and missing protein ID
-# int he 2nd row. Never seem 3 rows...
+# int he 2nd row. Never seen 3 rows...
 remove_dup_geneIDs = function(db)
 {
-  ppos_genid = db$GeneID !='' # 18351
+  ppos_genid = db$GeneID !='' 
   db_geneID = db[ppos_genid,]
-  dim(db_geneID) # 18351
+  dim(db_geneID) 
   db_nogeneID = db[!ppos_genid,]
-  dim(db_nogeneID) # 424    => dim(db) = 18775, OK
+  dim(db_nogeneID) 
 
   ppos = duplicated(db_geneID$GeneID )
-  sum(ppos) # 53
-  dup_geneIDs = db_geneID[ppos,1] # 53 IDs
+  sum(ppos) 
+  dup_geneIDs = db_geneID[ppos,1] 
 
   ppos_dup = db_geneID$GeneID %in% dup_geneIDs
-  length(ppos_dup) # 18351
-  sum(ppos_dup)    # 106
+  length(ppos_dup) 
+  sum(ppos_dup)    
 
   db_geneID_nodup = db_geneID[!ppos_dup,]
-  dim(db_geneID_nodup) # 18245
+  dim(db_geneID_nodup) 
   db_geneID_dup = db_geneID[ppos_dup,]
-  dim(db_geneID_dup) # 106
+  dim(db_geneID_dup) 
 
   # eliminate rows with no protID in the dup ones
   # and concatenate back the matrices
@@ -577,15 +570,14 @@ get_EnsIDs = function(organizm='human') {
   ensembl = biomaRt::useMart("ensembl", dataset=lookup[lookup_pos,2])
   gene_symbol = lookup[lookup_pos,3]
   res = biomaRt::getBM(attributes=c(gene_symbol, 'uniprotswissprot',
-                                    'ensembl_gene_id'),
-                       mart=ensembl)
+                                    'ensembl_gene_id'), mart=ensembl)
   dim(res)  # human: 37593
   colnames(res) = c('GeneID', 'ProtID', 'EnsID')
 
   # remove rows with blank ProtID, will not be an option
   # on the proteomics dataset (?)
   ppos = res$ProtID == ''
-  sum(ppos) # 16509
+  sum(ppos) 
   res = res[!ppos,]
   ens_ids = make_ID_structure(res)
 
@@ -619,9 +611,9 @@ match_linker_ids = function(dd1,  linker, l_col) {
 # 2 structures "EnsID"      "ProtID"     "NumEnsList" "GeneID"     "linkedIDs"
 # dd1 will be matched by EsnID column and dd2 by linkedIDs
 match_ids = function(dd1, dd2) {
-  ll1 = length(dd1$GeneID) # 19086
-  ll2 = length(dd2$GeneID) # 15032
-  # will NA's instead of default 0's  # vector('numeric', length=ll1)
+  ll1 = length(dd1$GeneID) 
+  ll2 = length(dd2$GeneID) 
+  # will use NA's instead of default 0's  
   match1 = rep(NA, each=ll1)
   match2 = rep(NA, each=ll2)  # vector('numeric', length=ll2)
   num_match1 = vector('numeric', length=ll1)
@@ -665,7 +657,6 @@ match_ids = function(dd1, dd2) {
 # add matched IDs to the structures for different organisms
 # function uses match_ids() to get most of the work done
 # dd1 and dd2 must be structures returned from match_linker_ids
-#
 add_match_ids = function(dd1, dd2) {
   matched_ids = match_ids(dd1, dd2)
   dd1$matchedID = matched_ids$match1

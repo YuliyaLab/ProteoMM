@@ -1,82 +1,3 @@
-# This software is released unde The GNU General Public License:
-# http://www.gnu.org/licenses/gpl.html
-
-# EigenMS normalization
-# Ref: "Normalization of peak intensities in bottom-up MS-based proteomics
-#    using singular value decomposition" Karpievitch YV, Taverner T, Adkins JN,
-#    Callister SJ, Anderson GA, Smith RD, Dabney AR. Bioinformatics 2009
-# and
-# Ref: "Metabolomics data normalization with EigenMS"
-#       Karpievitch YK, Nikolic SB, Wilson R, Sharman JE, Edwards LM
-#       Submitted to PLoS ONE
-#
-# Here we allow multiple factors to be preserved in ANOVA
-# model before identifying bais. This requires a bit of
-# thought on the side of the researchers, only few factors
-# should be 'preserved'. For example 'treatment group' is
-# important to preserve but 'age' may or may not be important
-# to preserve. Here we do not utilize peptides with 1+ grp
-# missing completely, this is a separate problem
-# addressed by Wang et al, 2011
-#
-# Written by Yuliya Karpievitch, Tom Taverner, and Shelley Herbrich
-# email: yuliya.k@gmail.com
-#
-# Version has been split into 2 main functions:
-# eig_norm1 finds significant bias trends, then the
-# user can decide if he/she wants to use that number.
-# For Metabolomics data we suggest using 20% of the
-# number of samples examined as the number of bias
-# trends to eliminated. By setting
-# ints_eig1$h.c = ceil(.2 * num_samples)
-# if the number of automatically identified bias trends
-# are close to that number we suggest
-# using the estimated number of bias trends.
-#
-# eig_norm2 function normalizes the data
-# Note that rescaling has been abandoned in the latest
-# version due to discussions abot the fact
-# that systematic bias is what has been inadvertently
-# added, thus we need to remove the bias
-# but nto add any additional variation.
-# Metabolomics in particular has a lot of variation
-# that still remains that we concluded
-# there is not need for rescaling.
-#
-# EigenMS estimates and preserves fixed effects.
-# Contributions to using Random effects are welcome.
-
-# HOWTO RUN:
-# source('~/EigenMS/EigenMS.R')
-# dd = # read in the data
-# grps = # read in group information file
-# logInts = # subset dd matrix to only the portion that contains intensities
-#           # replace 0's with NAs, do a log-transformation to
-#           # approximate Normality.
-# prot.info = cbind(data.frame(rownames(dd)), data.frame(rownames(dd)))
-#             # peptideIDs, no PR IDs here, just duplicate column
-#             # in case od protein IDs, those are not importnat for
-#             # normalization and will be ignored.
-# set.seed(123)
-# ints_eig1 = eig_norm1(m=logInts, treatment=grps, prot.info=prot.info)
-# ints_norm = eig_norm2(rv=ints_eig1)
-#
-# eig_norm1 = function(m, treatment, prot.info, write_to_file='')
-#  m - m x n matrix of log-transformed intensities, num peptides x num samples
-#  treatment - either a single factor or a data.frame of factors
-#  (actual R factors, else code will fail)
-#  eg:  bl = gl(3,14,168) # 3 factors, repeat every 14 times,
-#  total of 168 samples
-#  it = gl(2,7,168)  # 2 factors, repeat every 7 samples, 168 total
-#  Pi = gl(2,42,168) # 2 factors, repeat twice: 42 of PI+, PI-, PI+, PI-
-#  grpFactors = data.frame(bl,it,Pi)# factors we would
-#  like to preserve in EigenMS
-#  prot.info - 2 column data frame with peptide and protein IDs in that order.
-#  for metabolites both columns should contain metabolite IDs.
-#  write_to_file -  if a string is passed in, 'complete' peptides will be
-#  written to that file name
-#  Some peptides could be eliminated due to too many missing values
-#  (if not able to do ANOVA)
 
 # SUPPLEMENTARY FUNCTION USED BY EIGENMS
 # plot top 3 eigentrends with a line at 0.
@@ -257,38 +178,7 @@ makeLMFormula = function(eff, var_name = '') {
 
 
 
-# EigenMS normalization
-#
-# Ref: "Normalization of peak intensities in bottom-up MS-based proteomics
-#    using singular value decomposition" Karpievitch YV, Taverner T, Adkins JN,
-#    Callister SJ, Anderson GA, Smith RD, Dabney AR. Bioinformatics 2009
-# and
-# Ref: "Metabolomics data normalization with EigenMS"
-#       Karpievitch YK, Nikolic SB, Wilson R, Sharman JE, Edwards LM
-#       Submitted to PLoS ONE
-#
-# Here we allow multiple facotrs to be preserved in ANOVA model before
-# identifying bais.
-# This requires a bit of thought on the side of the researchers, only few
-# factors should be 'preserved'.
-# For example 'treatment group' is important to preserve but 'age' may or
-# may not be important to preserve.
-# Here we do not utilize peptides with 1+ grp missing completely,
-# this is a separate problem  addressed by Wang et al, 2011.
-#
-# Written by Yuliya Karpievitch, Tom Taverner, and Shelley Herbrich
-# email: yuliya.k@gmail.com
-#
-# Version has been split into 2 main functions: eig_norm1 finds significant
-# bias trends, then the user can decide if he/she wants to use that number.
-# For Metabolomics data we suggest useing 20% of the number of samples examined
-# as the number of bias trends to eliminated. By setting
-# ints_eig1$h.c = ceil(.2 * num_samples)
-# if the number of automatically identified bias trends are close to that
-# number we suggest
-# using the estimated number of bias trends.
-
-#' Identify bias trends
+#' Identify bias trends 
 #'
 #' First portion of EigenMS: Identify eigentrends attributable to bias, allow
 #' the user to adjust the number (with causion! if desired) before normalizing
@@ -439,9 +329,6 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
   numiter = nrow(pres)
   # vectorized option, use instead of the for-loop bellow
   nobs = matrixStats::rowSums2(!is.na(pres))
-  # for (ii in seq_len(numiter) ) {
-  #  nobs[ii] = sum(!is.na(pres[ii,]))
-  # }
   iii = nobs == ncol(pres)
   complete = rbind(pres[iii, ])
   
@@ -483,9 +370,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
     
     mod.c = stats::model.matrix(lm.fm$lm.formula, data = TREATS,
                                 eval(parse(text = lm.fm$lm.params)))
-    Y.c = as.matrix(complete) # used in eval() !!
-    oopt = options(warn = -1)
-    on.exit(options(oopt)) # on exit will return to the use set parameters
+    Y.c = as.matrix(complete) # used in eval() 
     
     # use stats::lm() to get residuals
     formula1 = paste('t(Y.c)~', as.character(lm.fm$lm.formula)[2], sep = '')
@@ -523,7 +408,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
   message('Number of treatments: ', n.u.treatment)
   
   h.c = sva.id(complete, n.u.treatment, lm.fm = lm.fm)$n.sv
-  message("Number of significant eigenpeptides/trends", h.c)
+  message("Number of bias trends automatically detected ", h.c)
   
   # show RAW trends
   # center each peptide around zero (subtract its mean across samples)
@@ -607,7 +492,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
 #' mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)
 #' @export
 eig_norm2 = function(rv) {
-  # yuliya: use pres matrix, as we cannot deal with m anyways,
+  # use pres matrix, as we cannot deal with m anyways,
   # need to narrow it down to 'complete' peptides
   treatment = rv$treatment
   my.svd = rv$my.svd
@@ -621,20 +506,20 @@ eig_norm2 = function(rv) {
   exPeps = vector(mode = "numeric", length = nrow(pres))
   
   message("Normalizing...")
-  treatment = data.frame(treatment) # does this need to be done?
+  treatment = data.frame(treatment) 
   if (n.u.treatment > 1) {
     lm.fm = makeLMFormula(treatment, 'ftemp')
     mtmp = stats::model.matrix(lm.fm$lm.formula, data = treatment,
                                eval(parse(text = lm.fm$lm.params)))
   } else {
     # have 1 treatment group
-    mtmp = treatment # as.numeric(t(treatment))
+    mtmp = treatment 
   }
-  # above needed to know how many values will get back for some matrices
+  # above we  needed to know how many values will get back for some matrices
   # create some variables:
   betahat = matrix(NA, nrow = dim(mtmp)[2], ncol = nrow(pres))
-  newR = array(NA, c(nrow(pres), ncol(pres))) #, n.treatment))
-  norm_m = array(NA, c(nrow(pres), ncol(pres))) # , n.treatment))
+  newR = array(NA, c(nrow(pres), ncol(pres))) 
+  norm_m = array(NA, c(nrow(pres), ncol(pres))) 
   numsamp = dim(pres)[2]
   betahat_n = matrix(NA, nrow = dim(mtmp)[2], ncol = nrow(pres))
   rm(mtmp)
@@ -670,13 +555,14 @@ eig_norm2 = function(rv) {
       ftemp = treatment[pos, ]
       ftemp = data.frame(ftemp)
       
-      oopt = options(warn = -1)
+      oopt = options()
       on.exit(options(oopt))
+      options(warn = -1)
       # using general function that can accomodate for 1+ number of factors
       lm.fm = makeLMFormula(ftemp, 'ftemp')
       modt = try(stats::model.matrix(lm.fm$lm.formula, data = ftemp,
                                      eval(parse(text = lm.fm$lm.params))),
-                 silent = TRUE)
+                                     silent = TRUE)
       options(warn = 0)
       
       # do nothing if could not make model matrix
@@ -703,8 +589,7 @@ eig_norm2 = function(rv) {
           resm_n[pos] = norm_m[ii, pos] - ceffects
           newR[ii,] = resm_n
         } else {
-          message('got exception 2 at peptide: ',
-                  ii,
+          message('got exception 2 at peptide: ', ii,
                   ' should not get here...')
           exPeps[ii] = 2
         }
@@ -743,7 +628,7 @@ eig_norm2 = function(rv) {
   
   message("Done with normalization!!!")
   colnames(V0) =  paste("Trend", seq_len(ncol(V0)), sep = "_")
-  
+  # on.exit takes care of the options, specified in line 559
   return(
     list(
       normalized = final,
@@ -784,21 +669,16 @@ eig_norm2 = function(rv) {
 #'   \item{n.sv}{Number of significant surrogate variables}
 #'   \item{p.sv}{Significance for the returned surrogate variables}
 #' }
-sva.id = function(dat,
-                  n.u.treatment,
-                  lm.fm,
-                  B = 500,
-                  sv.sig = 0.05)
+sva.id = function(dat, n.u.treatment, lm.fm, B = 500, sv.sig = 0.05)
 {
   message("Number of complete peptides (and samples) used in SVD")
   message(dim(dat))
   n = ncol(dat)
-  ncomp = n.u.treatment # JULY 2013: as.numeric(n.u.treatment)
+  ncomp = n.u.treatment 
   message("Number of treatment groups (in svd.id): ", ncomp)
   # should be true for either case and can be used later
   
   if (ncomp > 1) {
-    #
     formula1 = paste('t(dat)~', as.character(lm.fm$lm.formula)[2], sep = '')
     fit_lmAll = stats::lm(eval(parse(text = formula1)))
     res = t(stats::residuals(fit_lmAll))
@@ -817,10 +697,10 @@ sva.id = function(dat,
   s0 = s0 ^ 2
   dstat = s0 / sum(s0)
   ndf = length(dstat)
-  dstat0 = matrix(0, nrow = B, ncol = ndf) # num samples (?)
+  dstat0 = matrix(0, nrow = B, ncol = ndf) # num samples 
   
   message("Starting Bootstrap.....")
-  # Bootstrap procedure that determines the number of significant eigertrends...
+  # Bootstrap procedure determines the number of significant eigertrends...
   for (ii in seq_len(B)) {
     if (ii %% 50 == 0) {
       message('Iteration ', ii)
@@ -842,7 +722,7 @@ sva.id = function(dat,
   # yuliya: check p-values here, Tom had mean value...
   psv = rep(1, n)
   for (ii in seq_len(ndf)) {
-    # should this be compared to a MEAN?  Should this be dstat0[ii,] ?
+    # should this be compared to a mean? ie dstat0[ii,] ?
     posGreater = dstat0[, ii] > dstat[ii]
     psv[ii] = sum(posGreater) / B
   }

@@ -1,28 +1,29 @@
 Package: ProteoMM
-Type: Package
-Title: Multi-Dataset Model-based Differential Expression Proteomics Platform
-Version: 0.99.5
-Author: Yuliya V Karpievitch
+Title: Multi-Dataset Model-based Differential Expression Proteomics Analysis Platform
+Version: 0.99.6
+Description: ProteoMM is a statistical method to perform model-based 
+             peptide-level differential expression analysis of single or 
+             multiple datasets. For multiple datasets ProteoMM produces a 
+             single fold change and p-value for each protein across multiple 
+             datasets. 
+             ProteoMM provides functionality for normalization, missing 
+             value imputation and differential expression. 
+             Model-based peptide-level imputation and differential expression 
+             analysis component of package follows the analysis described in  
+             “A statistical framework for protein quantitation in bottom-up 
+             MS based proteomics" (Karpievitch et al. Bioinformatics 2009).  
+	         EigenMS normalisation is implemented as described in 
+	         "Normalization of peak intensities in bottom-up MS-based proteomics 
+	         using singular value  decomposition." 
+	         (Karpievitch et al. Bioinformatics 2009). 
+Author: Yuliya V Karpievitch, Tim Stuart and Sufyaan Mohamed
 Maintainer: Yuliya V Karpievitch <yuliya.k@gmail.com>
-Description: ProteoMM is a statistical method to perform model-based peptide-level 
-             differential expression analysis of single or multiple datasets. For multiple 
-	            datasets ProteoMM produces a single fold change and p-value for each protein 
-             across multiple datasets. 
-             ProteoMM provides functionality for normalization, missing value imputation 
-             and differential expression. 
-             Model-based peptide-level imputation and differential expression analysis 		     component of package follows the analysis described in  “A statistical 
-             framework for protein quantitation in bottom-up MS based proteomics" 
-             (Karpievitch et al. Bioinformatics 2009).  
-	            EigenMS normalisation is implemented as described in "Normalization of peak 
-	            intensities in bottom-up MS-based proteomics using singular value 
-             decomposition." (Karpievitch et al. Bioinformatics 2009). 
-Depends: R (>= 3.5)
 License: MIT
+LazyData: TRUE
+Depends: R (>= 3.5)
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 6.1.0
-Imports: dplyr,
-    gdata,
+Imports: gdata,
     biomaRt,
     ggplot2,
     ggrepel,
@@ -30,7 +31,7 @@ Imports: dplyr,
     readr,
     stats,
     matrixStats,
-    graphics,
+    graphics
 biocViews: MassSpectrometry, Proteomics, Normalization, DifferentialExpression
 Suggests: BiocStyle, knitr, rmarkdown
 VignetteBuilder: knitr

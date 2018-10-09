@@ -92,8 +92,8 @@ g.test = function(x, y = NULL, correct="none",
           x[2,1] <- x[2,1] - 0.5
         }
     }
-    sr <- apply(x,1,sum)
-    sc <- apply(x,2,sum)
+    sr = matrixStats::rowSums2(x) 
+    sc = matrixStats::colSums2(x) 
     E <- outer(sr,sc, "*")/n
     # we are not doing a monte-carlo, calculate G
 
@@ -109,10 +109,8 @@ g.test = function(x, y = NULL, correct="none",
     if (correct=="williams"){ # Do Williams' correction
       row.tot = 0 
       col.tot = 0
-      # vectorizing the for-loops
-      # for (i in seq_len(nrows)) { row.tot <- row.tot + 1/(sum(x[i,])) }
+      # yuliya: vectorized the for-loops
       row.tot = sum( 1 / (rowSums(x) ) )
-      # for (j in seq_len(ncols)) { col.tot <- col.tot + 1/(sum(x[,j])) }
       col.tot = sum( 1 / (colSums(x) ) )
       q <- 1+ ((n*row.tot-1)*(n*col.tot-1))/(6*n*(ncols-1)*(nrows-1))
     }
@@ -151,9 +149,7 @@ g.test = function(x, y = NULL, correct="none",
     }
     names(E) <- names(x)
     g = 0
-    # for (i in seq_len(length(x)) ) {
-    #  if (x[i] != 0) g <- g + x[i] * log(x[i]/E[i])
-    # } # vectorized code for the above loop!
+    # yuliya: vectorized 
     ppos = x != 0
     g = sum(x[ppos] * log(x[ppos]/E[ppos]))
     

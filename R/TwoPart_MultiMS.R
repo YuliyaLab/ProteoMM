@@ -178,7 +178,7 @@ compute_missing = function(mm) {
   nummiss = sum(is.na(mm))
   total = dims[1] * dims[2]
   perc_miss = nummiss / total
-  print(paste('Percent missing observations:', perc_miss) )
+  message('Percent missing observations: ', perc_miss)
   ret = data.frame(nummiss, total, perc_miss)
   colnames(ret) = c('num_missing', 'num_total', 'perc_missing')
 }
@@ -236,11 +236,10 @@ plot_volcano = function(FC, PV, FC_cutoff=2, PV_cutoff=.05, figtitle='') {
   tmp_y = -log10(tt)
   ppos = tmp_y > 20
   num_replace = sum(ppos)
-  print(paste("number to replace",num_replace) )
+  message("number to replace ",num_replace)
   if(num_replace) {
     tmp_y[ppos] = jitter(rep(19.5, times=num_replace) )
   }
-  # graphics::par(mar=c(3,3,3,3))
   xlimits = max(abs(FC)) + .2
   ylimits = max(tmp_y) + .2
   graphics::par(mfcol=c(1,1))
@@ -304,7 +303,6 @@ plot_volcano = function(FC, PV, FC_cutoff=2, PV_cutoff=.05, figtitle='') {
 #'                   PV_cutoff=.05, figtitle='Mouse DE')
 #'
 #' @import ggrepel ggplot2
-#' @importFrom dplyr mutate
 #' @return Nil
 #' @export
 plot_volcano_wLab = function(FC, PV, ProtID,
@@ -313,9 +311,8 @@ plot_volcano_wLab = function(FC, PV, ProtID,
   plotdata = data.frame(FC, PV, ProtID) # combine into 2 data frame
   ppos_rep = plotdata$PV == 0
   plotdata$PV[ppos_rep] = .000000001
-  plotdata = dplyr::mutate(plotdata, log_PV=-log10(PV))
-  plotdata$threshold = as.factor(abs(plotdata$FC) >= FC_cutoff
-                                 & plotdata$PV < PV_cutoff)
+  plotdata$log_PV = -log10(plotdata$PV)
+  plotdata$threshold = (abs(plotdata$FC) >= FC_cutoff) & (plotdata$PV < PV_cutoff)
   dim(plotdata)
 
   ggplot2::ggplot() + 
@@ -323,7 +320,8 @@ plot_volcano_wLab = function(FC, PV, ProtID,
     theme(legend.position = "none") +
     xlab("log2 fold change") +
     ylab("-log10 p-value") +
-    ggrepel::geom_text_repel(data=filter(plotdata, threshold==TRUE),
+    #ggrepel::geom_text_repel(data=filter(plotdata, threshold==TRUE),
+    ggrepel::geom_text_repel(data=plotdata[plotdata$threshold==TRUE,],
                     size = 3, alpha=.8, aes(x=FC, y=log_PV, label=ProtID) ) +
     ggplot2::theme_classic(base_size = 8) +
     ggplot2::geom_hline(yintercept=-log10(PV_cutoff), col='blue', alpha=.7) +
@@ -333,40 +331,6 @@ plot_volcano_wLab = function(FC, PV, ProtID,
     ggplot2::geom_vline(xintercept=FC_cutoff, col='blue', alpha=.7)
 }
 
-# DESCRIPTION
-# This function calculates multi-sample two-part tests to test for a difference
-# in means and proportions between 2 groups across multiple biological samples
-# P-values are generated using a permutation null distribution.
-#
-# USAGE
-# See TwoPartMultiMatrix_Example.r
-#
-# ARGUMENTS
-# data - a list with each element one biological p x n matrix where p is the
-#        the number of compounds and n is the number of subjects
-# groups - a vector indicating group membership. Groups must be coded 0,1.
-#          Only 2 group comparisons are supported with this code.
-# n.perm - the number of permutations to generate for the null distribution
-
-# VALUE
-# Returns a data.frame with the of T and T-Squared statistics for each compound
-# and permutation p values.
-# peptideLevel_DE = function(mm, treatment, prot.info, pr_ppos=2)
-  # Imputes missing values based on information from multiple peptides
-  # within a protein
-  # Input:
-  #   mm:    m x n matrix of intensities, numpeptides x numsamples
-  #   treatment:  vector indicating the treatment group of
-  #               each sample ie [1 1 1 1 2 2 2 2...]
-  #   pr_ppos - column index for protein ID in prot.info.
-  #     Can restrict to be #2...
-  #
-  # Output: matrix with 4 columns: protID, FC, p-value
-  #   ProtID - taken from prot.info (col 2 usually)
-  #   FC (fold change)
-  #   p-value for comparison between 2 groups (2 groups only here)
-  #      as interested in pariwise differences.
-  #   BH-adjusted p-value, Benjamini-Hochberg
 
 
 #' Multi-Matrix Differentia Expression Analysis
@@ -515,11 +479,9 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
   # grps will not change
   subset_data = subset_proteins(mm_list=mm_list, prot.info=prot.info,
                                 prot_col_name)
-  # names(subset_data)
-  # "sub_mm_list"  "sub_prot.info"  "sub_unique_mm_list"
-  # "sub_unique_prot.info"  "common_list"
-
-  print('Computing statistics')
+  # subset_data contains: "sub_mm_list"  "sub_prot.info"  
+  # "sub_unique_mm_list"  "sub_unique_prot.info"  "common_list"
+  message('Computing statistics')
   sub_mm_list = subset_data$sub_mm_list
   sub_prot.info = subset_data$sub_prot.info
   nsets = length(mm_list)
@@ -529,14 +491,14 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
   # should be position of the column that was passed in for ID
   pos_prot_id_col = seq_len(length(tt))[ttt]
 
-  ## Tstat = CalcT(data, groups)  # my test here return t-stat
   # for each dataset loop through, compute, and add up t-stat values
   tmp = peptideLevel_DE(sub_mm_list[[1]], treat[[1]], sub_prot.info[[1]],
                         pr_ppos=pos_prot_id_col)
   tstat_all = list()
   tstat_all[[1]] = tmp
-  # t_value si stored in col 5:  ProtID  FC  p-val
-  # BH_p-val  t_value   num_peptides
+  # statistic is stored in col 5, it is actually an F-statistic, 
+  # unless the test is equivalent to a t-test (2 treatment groups, 1 peptide) 
+  # ProtID  FC  p-val  BH_p-val  t_value   num_peptides
   tstat = as.double(tmp[,5])
   FCs = as.double(tmp[,2])
   PV = as.double(tmp[,3])
@@ -572,11 +534,11 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
 
   sum_tstat = rowSums(tstat)
 
-  print('Perfoming permutation test')
+  message('Perfoming permutation test')
 
   tstat_perm = list()
   for(ii in seq_len(nsets)) {
-    print(paste('Dataset', as.character(ii) ) )
+    message('Dataset ', as.character(ii) )
     tstat_perm[[ii]] = NULL
     for(jj in seq_len(nperm)) {
       # get permuted labels for each iteration, then compute T_p
@@ -616,23 +578,23 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
       }
     }
   }
- # It seesm that p-values produced by the permitation
- # test are [0, .6], thus standard
- # adjustments will not do very well.
+ # Sometimes p-values produced by the permitation
+ # test are [0, .6], thus standard adjustments will not do very well.
  # I will use 'fdr' orption in p.adjust and then rescale the interval [0 1].
  # p-values look the best, according to te theoretical
  # distribution, after such adjustment
  p_vals_tmp =  stats::p.adjust(p_vals, method="fdr")
  mmin = min(p_vals_tmp)
  mmax = max(p_vals_tmp)
- adj_PV = (p_vals_tmp - mmin) / (mmax-mmin)
+ adj_PV = (p_vals_tmp - mmin) / (mmax-mmin) # rescales to [0 1]
+ # above line does nothing if p-values are on interval [0 1] already
  FC = rowMeans(FCs)
 
  # protein info is on peptide level, so convert to
  # the protein level info, no duplication
  # take prot IDs from dataset 1
  unik = !duplicated(sub_prot.info[[1]][,prot_col_name])
- ppos_u_prots = seq_along(sub_prot.info[[1]][,prot_col_name])[unik]  ## indices
+ ppos_u_prots = seq_along(sub_prot.info[[1]][,prot_col_name])[unik] # indices
  u_prot_info = sub_prot.info[[1]][ppos_u_prots,]
 
  res = data.frame(protIDused=PROTIDS, FC, P_val=p_vals,
@@ -803,12 +765,11 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
   y_out[ppos,3] = stats::p.adjust(y_out[ppos,2],"BH")
   y_out[!ppos,3] = 1 # these would have been 2 in Raw p-values
 
-  # XsqDF returned from the g-test is not useful,
-  # and is the same as statistic here
-  # so calculate my estimate of fold change as:
+  # XsqDF returned from the g-test is not useful, and is the same as 
+  # statistic here so calculate my estimate of fold change as:
   # (% pep missing grp1) / (% pep missing grp1)
 
-  # HERE make a dataframe to be returned -
+  # make a dataframe to be returned -
   # add protein names as 1st col in a data frame
   DE_res = data.frame(all.proteins, y_out, stringsAsFactors=FALSE)
   de_ret$DE_res = DE_res
@@ -970,11 +931,10 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
   subset_data = subset_proteins(mm_list=mm_list,
                                 prot.info=prot.info,
                                 prot_col_name)  # grps will not change
-  # names(subset_data)
-  # "sub_mm_list"  "sub_prot.info"
+  # subset_data contains:  "sub_mm_list"  "sub_prot.info" 
   # "sub_unique_mm_list"  "sub_unique_prot.info"  "common_list"
 
-  print('Computing statistics')
+  message('Computing statistics')
   sub_mm_list = subset_data$sub_mm_list
   sub_prot.info = subset_data$sub_prot.info
   nsets = length(mm_list)
@@ -988,7 +948,7 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
                                pr_ppos=pos_prot_id_col)
   tstat_all = list()
   tstat_all[[1]] = tmp
-  # t_value si stored in col 5:  ProtID  FC  p-val
+  # t_value is stored in col 5:  ProtID  FC  p-val
   # BH_p-val  t_value   num_peptides
   tstat = as.double(tmp[,5])
   FCs = as.double(tmp[,2])
@@ -1000,8 +960,7 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
   col_PV = paste('PV_', dataset_suffix[1], sep='')
   col_BHPV = paste('BHPV_', dataset_suffix[1], sep='')
   col_NUMPEP = paste('NUMPEP_', dataset_suffix[1], sep='')
-  # prot names will be the same, will not combine them in the loop
-  PROTIDS = tmp[,1] # ??
+  PROTIDS = tmp[,1] 
   # prot names will be the same, will not combine them in the loop
   for(ii in 2:nsets){ # for second and more datasets
     tmp = peptideLevel_PresAbsDE(sub_mm_list[[ii]],
@@ -1009,7 +968,6 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
                                  sub_prot.info[[ii]],
                                  pr_ppos=pos_prot_id_col)
     tstat_all[[ii]] = tmp
-    # yuliya: may need to subset here, tmp is complex var
     tstat = cbind(tstat, as.double(tmp[,5]))
     FCs = cbind(FCs, tmp[,2])
     PV =  cbind(PV, tmp[,3])
@@ -1027,11 +985,11 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
   colnames(NUMPEP) = col_NUMPEP
   sum_tstat = rowSums(tstat) # check that correctly summed over columns
 
-  print('Perfoming permutation test')
+  message('Perfoming permutation test')
 
   tstat_perm = list()
   for(ii in seq_len(nsets)) {
-    print(paste('Dataset', as.character(ii) ) )
+    message('Dataset ', as.character(ii) )
     tstat_perm[[ii]] = NULL
     for(jj in seq_len(nperm)) {
       # get permuted labels for each iteration, then compute T_p
@@ -1074,22 +1032,8 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
       }
     }
   }
-
-  # It seems that sometimes p-values produced by the
-  # permitation test are [0, .5],
-  # thus standard adjustments may not do very well.
-  # One option is to rescale raw p-values to the
-  # interval with max of 1.
-  # P-values can look the best (in accordance with the
-  # theoretical distribution, after such adjustment.
+  # multiple testing adjustement - Benjamini-Hochberg
   adj_PV = stats::p.adjust(p_vals, method = 'BH')
-  # I will use 'fdr' option in p.adjust and then rescale the interval [0 1].
-  # p-values look the best, according to te theoretical
-  # distribution, after such adjustment - below works well for ANOVA
-  # p_vals_tmp =  stats::p.adjust(p_vals, method="fdr")
-  # mmin = min(p_vals_tmp)
-  # mmax = max(p_vals_tmp)
-  # adj_PV = (p_vals_tmp - mmin) / (mmax-mmin)
   FC = rowMeans(FCs)
 
   # protein info is on peptide level, so convert to
@@ -1244,10 +1188,8 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
     sub_unique_mm_list[[ii]] = mm_list[[ii]][!ppos,]
     sub_unique_prot.info[[ii]] = prot.info[[ii]][!ppos,]
     # each list with proteins in common between
-    # datasets needs to be in the same order
-    # for future comparisons.
+    # datasets needs to be in the same order for future comparisons.
     # Sort in increasing order of ID being used by the values in ret$ix
-    # ret = sort(sub_prot.info[[ii]][,c(prot_col_name)], index.return=TRUE)
     indx = gtools::mixedorder(as.character(
                     sub_prot.info[[ii]][,c(prot_col_name)]))
     sub_mm_list[[ii]] = sub_mm_list[[ii]][indx,]
@@ -1295,7 +1237,7 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
 #'         the number of datasets that as were passed into the function}
 #' }
 #'@examples
-#'#' # Load mouse dataset
+#' # Load mouse dataset
 #' data(mm_peptides)
 #' head(mm_peptides)
 #' intsCols = 8:13
@@ -1367,9 +1309,9 @@ get_presAbs_prots = function(mm_list, prot.info,
     prots_removed_pos = prot.info[[ii]][,c(prot_col_name)] %in%
       protnames_norm[[ii]]
     # peptides kept
-    print(paste('Number of peptides normalized:',sum(prots_removed_pos) ) )
+    message('Number of peptides normalized: ',sum(prots_removed_pos) )
     # peptides eliminated
-    print(paste('Number of peptides Pres/Abs:',sum(!prots_removed_pos) ) )
+    message('Number of peptides Pres/Abs: ',sum(!prots_removed_pos) )
 
     presAbs_prot.info[[ii]] = prot.info[[ii]][!prots_removed_pos,]
     presAbs_ints[[ii]] = mm_list[[ii]][!prots_removed_pos,]

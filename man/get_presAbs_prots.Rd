@@ -43,7 +43,7 @@ If a single dataset is passed in
 (list of length one) it will be processed in the same way as longer lists.
 }
 \examples{
-#' # Load mouse dataset
+# Load mouse dataset
 data(mm_peptides)
 head(mm_peptides)
 intsCols = 8:13
