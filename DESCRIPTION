@@ -1,6 +1,6 @@
 Package: ProteoMM
 Title: Multi-Dataset Model-based Differential Expression Proteomics Analysis Platform
-Version: 0.99.6
+Version: 0.99.7
 Description: ProteoMM is a statistical method to perform model-based 
              peptide-level differential expression analysis of single or 
              multiple datasets. For multiple datasets ProteoMM produces a 
@@ -28,7 +28,6 @@ Imports: gdata,
     ggplot2,
     ggrepel,
     gtools,
-    readr,
     stats,
     matrixStats,
     graphics
