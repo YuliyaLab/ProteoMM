@@ -308,10 +308,12 @@ plot_volcano = function(FC, PV, FC_cutoff=2, PV_cutoff=.05, figtitle='') {
 plot_volcano_wLab = function(FC, PV, ProtID,
                              FC_cutoff=2,
                              PV_cutoff=.05, figtitle='') {
-  plotdata = data.frame(FC, PV, ProtID) # combine into 2 data frame
+  log_PV = PV  
+  plotdata = data.frame(FC, PV, ProtID, log_PV) # combine into 2 data frame
   ppos_rep = plotdata$PV == 0
   plotdata$PV[ppos_rep] = .000000001
-  plotdata$log_PV = -log10(plotdata$PV)
+  log_PV = -log10(plotdata$PV)
+  plotdata$log_PV = log_PV
   plotdata$threshold = (abs(plotdata$FC) >= FC_cutoff) & (plotdata$PV < PV_cutoff)
   dim(plotdata)
 
