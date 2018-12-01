@@ -31,6 +31,7 @@ Imports: gdata,
     stats,
     matrixStats,
     graphics
-biocViews: MassSpectrometry, Proteomics, Normalization, DifferentialExpression
+biocViews: MassSpectrometry, Proteomics, Normalization, DifferentialExpression, 
+    ImmunoOncology
 Suggests: BiocStyle, knitr, rmarkdown
 VignetteBuilder: knitr
