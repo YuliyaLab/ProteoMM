@@ -366,7 +366,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
     } else {
       colnames(TREATS) = colnames(treatment)
     }
-    attach(TREATS)
+    # attach(TREATS) - removed Aug 21, 2021
     
     mod.c = stats::model.matrix(lm.fm$lm.formula, data = TREATS,
                                 eval(parse(text = lm.fm$lm.params)))
