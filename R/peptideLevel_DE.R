@@ -513,7 +513,7 @@ remove_dup_geneIDs = function(db)
     # keep row with ProtID
     ppos_protid = cur_gene$ProtID != ''
     if(sum(ppos_protid) > 1) {
-      # keep the bottm row - in our dataset we get
+      # keep the bottom row - in our dataset we get
       # that as Leading Razor Protein...
       undup_db = rbind(undup_db,cur_gene[2,])
       # http://www.enzolifesciences.com/ADI-SPP-502/hsp70-a1-mouse-recombinant/
@@ -585,10 +585,10 @@ get_EnsIDs = function(organizm='human') {
 }
 
 
-# dd1 is the datastructure returned from make_ID_structure()
+# dd1 is the data structure returned from make_ID_structure()
 # must contain dd1$EnsID column
 # linker - 2 column matrix with  EnsIDs that match to EnsIDs
-#          in dd1 as well as the other organizm EnsIDs
+#          in dd1 as well as the other organism EnsIDs
 #          which will be added as a list to dd1
 match_linker_ids = function(dd1,  linker, l_col) {
   ll1 = length(dd1$EnsID) # 19086

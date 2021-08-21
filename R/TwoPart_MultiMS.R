@@ -2,12 +2,12 @@
 # Function to conduct multi-sample two-part test with
 # permutation null distribution
 # Initial implementation date: 22 July 2016
-# Releae data: February 2018
+# Relesae data: February 2018
 ###############################################################################
 
 #' hs_peptides - peptide-level intensities for human
 #'
-#' A dataset containing the protein and petide information and peptide-level
+#' A dataset containing the protein and peptide information and peptide-level
 #' intensities for 6 samples: 3 CG and 3 mCG groups. There are 69 proteins.
 #' The columns are as follows:
 #'
@@ -84,7 +84,7 @@ NULL
 #' @param mm data frame of metadata and intensities as a single data frame
 #' @param use_cols column numbers to subset and return,
 #'                 no range checking no range
-#'                 checking on the column indeces is performed
+#'                 checking on the column indexes is performed
 #' @return m_ints data frame of intensities only
 #' @examples
 #' data(mm_peptides)
@@ -104,10 +104,10 @@ make_intencities = function(mm, use_cols) {
 #' Subdivide a data frame of protein metadata and intensities
 #' into a data frame of meta data only
 #'
-#' @param mm data frame of metadata and intensities as a signle data frame
+#' @param mm data frame of metadata and intensities as a single data frame
 #' @param use_cols column numbers to subset and return,
 #'                 no range checking on the column
-#'                 indeces is performed
+#'                 indexes is performed
 #' @return m_ints data frame of intensities only
 #' @examples
 #' data(mm_peptides)
@@ -120,7 +120,7 @@ make_meta = function(mm, use_cols) {
   return(m_meta)
 }
 
-#' Convert values in a matrix to log2 transfored values
+#' Convert values in a matrix to log2 transformed values
 #'
 #' convert_log2 replaces 0's with NA's than does a log2 transformation
 #' Replacing 0's with NA's is the correct approach to Proteomics data analysis
@@ -135,12 +135,12 @@ make_meta = function(mm, use_cols) {
 #' @param mm a dataframe of raw intensities in format:
 #'  (# peptides)x(# samples+possibly peptide & protein information (metadata))
 #'
-#' @param use_cols vector of column indecies that make up the intensities
+#' @param use_cols vector of column indexes that make up the intensities
 #'              usually in sequential order but do not have to be
 #'              user is responsible for making sure that specified columns are
 #'              indeed numeric and correspond to intensities for each sample
 #'
-#' @return matrix of log2 transforemd intensities where 0's were
+#' @return matrix of log2 transformed intensities where 0's were
 #'         replaced with NA's prior
 #'         to transformation
 #'
@@ -165,13 +165,13 @@ convert_log2 = function(mm, use_cols) {
 
 
 # function compute_missing
-# computes the nummber of missing and percent missing observations
+# computes the number of missing and percent missing observations
 # PARAMETER
 #   mm is a matrix returned by convert_log2 or matrix with NA's representing
 #   missing values
 # PRINTS out % missing
 # RETURN
-#   dataframe with 3 columns (num_missing, num_total, perc_missing)
+#   data frame with 3 columns (num_missing, num_total, perc_missing)
 #   and 1 row of values
 compute_missing = function(mm) {
   dims = dim(mm)
@@ -189,11 +189,11 @@ compute_missing = function(mm) {
 #' Two lines are plotted for the p-value cutoff at p = PV_cutoff (solid line)
 #' and p = 0.1 (dashed line).
 #' @param FC vector of fold changes
-#' @param PV vctor of p-values, same lenght as FC
+#' @param PV vector of p-values, same length as FC
 #' @param FC_cutoff fold change cutoff where to draw
 #'                  vertical cutoff lines, default = 2
 #' @param PV_cutoff p-value cutoff where to draw a
-#'                  horisontal cutoff line, default ==.05
+#'                  horizontal cutoff line, default ==.05
 #' @param figtitle title to display at the top of the figure, default = ''
 #' @return NULL
 #' @examples
@@ -261,14 +261,14 @@ plot_volcano = function(FC, PV, FC_cutoff=2, PV_cutoff=.05, figtitle='') {
 #' Two lines are plotted for the p-value cutoff at p = PV_cutoff
 #' (solid line) and p = 0.1 (dashed line).
 #' @param FC vector of fold changes
-#' @param PV vector of p-values, same lenght as FC
-#' @param ProtID vector of protein IDs, can be gene IDs, same lenght as FC & PV.
-#'        Namaes in this vector will be displayed in the volcano plot
+#' @param PV vector of p-values, same length as FC
+#' @param ProtID vector of protein IDs, can be gene IDs, same length as FC & PV.
+#'        Names in this vector will be displayed in the volcano plot
 #'        for differentially expressed proteins for this reason short names
 #'        are preferred.
 #' @param FC_cutoff fold change cutoff where to draw vertical cutoff
 #'                lines, default = 2
-#' @param PV_cutoff p-value cutoff where to draw a horisontal cutoff line,
+#' @param PV_cutoff p-value cutoff where to draw a horizontal cutoff line,
 #'                default ==.05
 #' @param figtitle title to display at the top of the figure, default = ''
 #' @return NULL
@@ -335,7 +335,7 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 
 
 
-#' Multi-Matrix Differentia Expression Analysis
+#' Multi-Matrix Differential Expression Analysis
 #'
 #' Multi-Matrix Differential Expression Analysis computes Model-Based
 #' statistics for each dataset, the sum of individual statistics is the
@@ -343,10 +343,10 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 #' which computed the same statistics and sums them after permuting
 #' the values across treatment groups. As is outlined in Karpievitch
 #' et al. 2018. Important to set the random number generator seed for 
-#' reprodusibility with set.seed() function.
+#' reproducibility with set.seed() function.
 #'
 #' @param mm_list list of matrices for each experiment, length = number of
-#'                datasets to compare internal dataset dimentions: numpeptides
+#'                datasets to compare internal dataset dimensions: numpeptides
 #'                x numsamples for each dataset
 #' @param treat list of data frames with treatment information to compute
 #'              the statistic
@@ -356,9 +356,9 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 #'              in same order as mm_list
 #' @param prot_col_name column name in prot.info that contains protein
 #'              identifiers that link all datasets together. Not that
-#'              Protein IDs will differ across different organizms and
+#'              Protein IDs will differ across different organisms and
 #'              cannot be used as the linking identifier.
-#'              Function match_linker_ids() produces numeric identifyers
+#'              Function match_linker_ids() produces numeric identifiers
 #'              that link all datasets together
 #' @param nperm number of permutations, default = 500,
 #'              this will take a while, test code
@@ -366,14 +366,14 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 #' @param dataset_suffix vector of character strings that corresponds to the
 #'       dataset being analysed. Same length as mm_list. Names will be appended
 #'       to the columns names that will be generated for each analysed dataset.
-#'       For example, if analysing mouse and human data this vector may be:
+#'       For example, if analyzing mouse and human data this vector may be:
 #'       c('Mouse', 'Human')
 #' @return data frame with the following columns
 #' \describe{
-#'   \item{protIDused}{Column containing the protien IDs used to
+#'   \item{protIDused}{Column containing the protein IDs used to
 #'                     link proteins across datasets}
 #'   \item{FC}{Average fold change across all datasets}
-#'   \item{P_val}{Permutation-based p-valu for the differences
+#'   \item{P_val}{Permutation-based p-value for the differences
 #'                between the groups}
 #'   \item{BH_P_val}{Multiple testing adjusted p-values}
 #'   \item{statistic}{Statistic computed as a a sum of statistics
@@ -390,7 +390,7 @@ plot_volcano_wLab = function(FC, PV, ProtID,
 #'   \item{BHPV}{Multiple testing adjusted p-values for
 #'               individual datasets. As many
 #'         columns as there are datasets being analyzed.}
-#'   \item{NUMPEP}{Number of peptides presents in each protien
+#'   \item{NUMPEP}{Number of peptides presents in each protein
 #'                 for each dataset. As many
 #'         columns as there are datasets being analyzed.}
 #'}
@@ -580,10 +580,10 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
       }
     }
   }
- # Sometimes p-values produced by the permitation
+ # Sometimes p-values produced by the permutation
  # test are [0, .6], thus standard adjustments will not do very well.
- # I will use 'fdr' orption in p.adjust and then rescale the interval [0 1].
- # p-values look the best, according to te theoretical
+ # I will use 'fdr' option in p.adjust and then rescale the interval [0 1].
+ # p-values look the best, according to the theoretical
  # distribution, after such adjustment
  p_vals_tmp =  stats::p.adjust(p_vals, method="fdr")
  mmin = min(p_vals_tmp)
@@ -618,7 +618,7 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
 #' @param mm m x n matrix of intensities, num peptides x num samples
 #' @param treatment vector indicating the treatment
 #'                  group of each sample ie [1 1 1 1 2 2 2 2...]
-#' @param prot.info 2+ colum data frame of peptide ID, protein ID, etc columns
+#' @param prot.info 2+ column data frame of peptide ID, protein ID, etc columns
 #' @param pr_ppos - column index for protein ID in
 #'               prot.info. Can restrict to be #2...
 #'
@@ -628,7 +628,7 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
 #'         a column used to identify proteins}
 #'   \item{FC}{Approximation of the fold change computed
 #'        as percent missing observations
-#'        group 1 munis in percent missing observations group 2}
+#'        group 1 minus in percent missing observations group 2}
 #'   \item{P_val}{p-value for the comparison between
 #'                2 groups (2 groups only here)}
 #'   \item{BH_P_val}{Benjamini-Hochberg adjusted p-values}
@@ -694,9 +694,9 @@ prot_level_multi_part = function(mm_list, treat, prot.info,
 #' @export
 peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
   #   XsqDE (degrees of freedom) -- not used, place holder for where
-  #   FC goes in abundace-based DE
+  #   FC goes in abundance-based DE
   #   p-value for comparison between 2 groups (2 groups only here)
-  #      as interested in pariwise differences.
+  #      as interested in pairwise differences.
   #   BH-adjusted p-value, Benjamini-Hochberg multiple testing adjustment
 
   # Match to protein
@@ -749,11 +749,11 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
     } else {
       y_out[kk,2] = 2
       # all values are OUT of RANGE of proper results, will be
-      # used to flag (and remove) all preent or all absent values
+      # used to flag (and remove) all present or all absent values
       y_out[kk,1] = 2
       y_out[kk,4] = 2 # more likely to have all NAs
     }
-    # count # of missing values in each tretment,
+    # count # of missing values in each treatment,
     # will vary depending on the number of peptides
     nummiss[kk,1] = sum(xx[treatment==treatsX[1]]==TRUE)
     nummiss[kk,2] = sum(xx[treatment==treatsX[2]]==TRUE)
@@ -805,7 +805,7 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
 #' power over the Presence Absence analysis.
 #'
 #' @param mm_list list of matrices of intensities for each experiment,
-#'        dimentions: numpeptides x numsamples
+#'        dimensions: numpeptides x numsamples
 #' @param treat list of data frames with treatment information to
 #'        compute the statistic,
 #'        parallel to mm_list and prot.info
@@ -818,16 +818,16 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
 #' @param nperm number of permutations
 #' @param dataset_suffix a list of strings that will be
 #'         appended to the column names
-#'         for FC, PV, BHPV and numebers of peptides
+#'         for FC, PV, BHPV and numbers of peptides
 #'
 #' @return a data frame with the following columns:
 #' \describe{
 #'   \item{protIDused}{protein metadata, peptide sequence if was
 #'        passed in as one of the columns is the first peptide
-#'        equence encountered in the data for that protein}
-#'   \item{FCs}{Avegares across all datasets of the approximation
+#'        sequence encountered in the data for that protein}
+#'   \item{FCs}{Averages across all datasets of the approximation
 #'        of the fold change computed as percent missing observations
-#'        group 1 munis in percent missing observations group 2 in
+#'        group 1 minus in percent missing observations group 2 in
 #'        peptideLevel_PresAbsDE() function}
 #'   \item{P_val}{p-value for the comparison between 2 groups
 #'               (2 groups only here) obtained from a permutation test}
@@ -840,7 +840,7 @@ peptideLevel_PresAbsDE = function(mm, treatment, prot.info, pr_ppos=2){
 #'                      across all datasets}
 #'   \item{FCs}{Approximation of the fold change computed
 #'        as percent missing observations
-#'        group 1 munis in percent missing observations
+#'        group 1 minus in percent missing observations
 #'        group 2 in peptideLevel_PresAbsDE() function}
 #'   \item{PV}{p-values produced by g-test for individual datasets}
 #'   \item{BHPV}{adjusted p-values produced by g-test for individual datasets}
@@ -1034,7 +1034,7 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
       }
     }
   }
-  # multiple testing adjustement - Benjamini-Hochberg
+  # multiple testing adjustment - Benjamini-Hochberg
   adj_PV = stats::p.adjust(p_vals, method = 'BH')
   FC = rowMeans(FCs)
 
@@ -1064,7 +1064,7 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
 #'
 #' @param mm_list list of matrices for each experiment,
 #'                length = number of datasets to compare
-#'                internal dataset dimentions:
+#'                internal dataset dimensions:
 #'                numpeptides x numsamples for each dataset
 #' @param prot.info list of protein and peptide mapping
 #'              for each matrix in mm_list,
@@ -1073,10 +1073,10 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
 #'              protein identifiers that
 #'              link all datasets together.
 #'              Not that Protein IDs will differ across
-#'              different organizms and cannot be used
+#'              different organisms and cannot be used
 #'              as the linking identifier.
 #'              Function match_linker_ids() produces
-#'              numeric identifyers that link all
+#'              numeric identifiers that link all
 #'              datasets together
 #' @return data frame with the following columns
 #' \describe{
@@ -1090,7 +1090,7 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
 #'   \item{sub_unique_mm_list}{list of dataframes of
 #'         intensities not found in all
 #'         datasets}
-#'   \item{sub_unique_prot.info}{ist of dataframes of
+#'   \item{sub_unique_prot.info}{list of dataframes of
 #'         metadata not found in all
 #'         datasets}
 #'   \item{common_list}{list of protein IDs commnon to all datasets}
@@ -1153,7 +1153,7 @@ prot_level_multiMat_PresAbs=function(mm_list, treat, prot.info, prot_col_name,
 #' subset_data = subset_proteins(mm_list=mms, prot.info=protinfos, 'MatchedID')
 #' mms_mm_dd = subset_data$sub_unique_mm_list[[1]]
 #' protinfos_mm_dd = subset_data$sub_unique_prot.info[[1]]
-#' # DIfferential expression analysis for mouse specific protiens
+#' # Differential expression analysis for mouse specific protiens
 #' DE_mCG_CG_mm_dd = peptideLevel_DE(mms_mm_dd, grps,
 #'                                   prot.info=protinfos_mm_dd, pr_ppos=2)
 #'
@@ -1210,18 +1210,18 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
 #' Get Presence/Absence Proteins
 #'
 #' Function get_presAbs_prots() produces a
-#' subset of protein meta data and intencities
+#' subset of protein meta data and intensities
 #' for multiple datasets pass in as a list.
 #' If a single dataset is passed in
 #' (list of length one) it will be processed in the same way as longer lists.
 #'
 #' @param mm_list list of matrices of intensities for each experiment.
-#'                Dimentions: numpeptides x numsamples
+#'                Dimensions: numpeptides x numsamples
 #'                different for each dataset.
 #' @param prot.info list of protein and peptide metadata/mappings
 #'                for each matrix in mm_list, data.frames "parallel"
 #'                to matrices in mm_list.
-#' @param protnames_norm list of protein pdentifies to be used
+#' @param protnames_norm list of protein identifies to be used
 #'                to determine peptides that will be placed into
 #'                Presence/Absence analysis category due to
 #'                too many missing peptides. Taken from the
@@ -1231,7 +1231,7 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
 #'
 #' @return list of lists of length 2
 #' \describe{
-#'   \item{intensities}{list of intecities in the same
+#'   \item{intensities}{list of intensities in the same
 #'         order and of the same length as
 #'         the number of datasets that were passed into the function}
 #'   \item{protein metadata}{list of protein metadata in the
@@ -1285,12 +1285,12 @@ subset_proteins = function(mm_list, prot.info, prot_col_name) {
 get_presAbs_prots = function(mm_list, prot.info,
                              protnames_norm, prot_col_name) {
   # function get_presAbs_prots() produces a subset
-  # of protein meta data and intencities
+  # of protein meta data and intensities
   # for multiple datasets pass in as a list, single dataset
   # will be processed in the same way
   # INPUT
   #   mm_list   - list of matrices of intensities for each
-  #         experiment, dimentions: numpeptides x numsamples
+  #         experiment, dimensions: numpeptides x numsamples
   #   prot.info - list of protein and peptide mappings for each
   #          matrix in mm_list, data.frame parallel to mm-list
   #   protnames_norm - list of Protein Identifies to be used to
@@ -1300,7 +1300,7 @@ get_presAbs_prots = function(mm_list, prot.info,
   #   prot_col_name - column name (string) that will be
   #         used to get ProteinIDs in the raw data matrices
   # OUTPUT
-  #   list of lists - position 1: list of intecities,
+  #   list of lists - position 1: list of intensities,
   #            position 2: list of protein metadata,
   #            in the order matrices were pass in
   ll = length(mm_list)

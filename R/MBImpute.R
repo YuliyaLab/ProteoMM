@@ -1,4 +1,4 @@
-# Model-based imputaion  - last save 23/06/16
+# Model-based imputation  - last save 23/06/16
 # Ref:  "A statistical framework for protein quantitation in bottom-up MS-based
 #        proteomics. Karpievitch Y, Stanley J, Taverner T, Huang J, Adkins JN,
 #        Ansong C, Heffron F, Metz TO, Qian WJ, Yoon H, Smith RD, Dabney AR.
@@ -15,23 +15,23 @@
 #' Expects the data to be filtered to contain
 #' at least one observation per treatment
 #' group.
-#' For experiments with lower overall abundaneces such as multiplexed
+#' For experiments with lower overall abundances such as multiplexed
 #' experiments check if the imputed value is below 0, if so value is reimputed
-#' untill it is above 0.
+#' until it is above 0.
 #'
 #' @param mm number of peptides x number of samples matrix of intensities
 #' @param treatment vector indicating the treatment group of each sample eg
 #'        as.factor(c('CG','CG','CG', 'mCG','mCG','mCG')) or c(1,1,1,1,2,2,2,2)
 #' @param prot.info protein metadata, 2+ columns: peptide IDs, protein IDs, etc
 #' @param pr_ppos column index for protein ID in prot.info
-#' @param my.pi PI value, estimate of the proportion of peptides missign
+#' @param my.pi PI value, estimate of the proportion of peptides missing
 #'              completely at random, as compared to censored at lower
-#'              abundance levels default values of 0.05 is usually reasoanble
+#'              abundance levels default values of 0.05 is usually reasonable
 #'              for missing completely at random values
 #'              in proteomics data
 #' @param compute_pi TRUE/FALSE (default=FALSE) estimate Pi is set to TRUE,
 #'              otherwise use the provided value. We consider Pi=0.05 a
-#'              reasonable estimate for onservations missing completely at
+#'              reasonable estimate for observations missing completely at
 #'              random in proteomics experiments. Thus values is set to NOT
 #'              estimate Pi by default. Note: spline smoothing
 #'              can sometimes produce values of Pi outside the range of
@@ -64,7 +64,7 @@
 #' mm_norm_m =  mm_m_ints_norm$normalized[,8:13]
 #' 
 #' # ATTENTION: SET RANDOM NUMBER GENERATOR SEED FOR REPRODUCIBILITY !!
-#' set.seed(125) # if nto set every time results will be different
+#' set.seed(125) # if not set every time results will be different
 #' imp_mm = MBimpute(mm_norm_m, grps, prot.info=mm_prot.info, pr_ppos=2,
 #'                   my.pi=0.05, compute_pi=FALSE)
 #' @export
@@ -114,8 +114,8 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     # "poor quality" was defined (Karpievitch et al. 2009)
     # as having little "information" abt grp differences compared to
     # other peptides estimate data parameters.
-    # To speed up execution we allow EigenMS to eliminat all peptides
-    # with fewer than one observation per treatment group and impte the rest.
+    # To speed up execution we allow EigenMS to eliminate all peptides
+    # with fewer than one observation per treatment group and impute the rest.
     n.peptide = nrow(y_raw)
     yy = as.vector(t(y_raw))
     nn = length(yy)
@@ -168,15 +168,15 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
     num = 0
     den = 0
     # calculate pooled variance for each peptide
-    # if only 1 onservation in a dx group assign the overall variance
+    # if only 1 observation in a dx group assign the overall variance
     for(ii in seq_len(n.peptide))
     {
-      # which treatment has more obsertations? - use one of the 2 groups
+      # which treatment has more observations? - use one of the 2 groups
       pep = yy[peptide==ii]
       most_obs = which(max(n.present[ii,]) == n.present[ii,])
       lala = length(most_obs)
       if(lala > 1) {
-        # more than 1 gorup has max # of observations, pick one at random
+        # more than 1 group has max # of observations, pick one at random
         most_obs = most_obs[sample(lala,1)]
       }
       tmp = data.frame(most_obs)
@@ -259,12 +259,12 @@ MBimpute = function(mm, treatment, prot.info, pr_ppos=2, my.pi=0.05,
       mus = y.predict[set.cen]
       ss = sigma[set.cen]
       cutoff = c_h[set.cen] # rep(c.guess, nn)[set.cen]
-      # Apri 9, 2018 - added lo=0 cutoff, truncated normal at both ends
+      # April 9, 2018 - added lo=0 cutoff, truncated normal at both ends
       # intensities below 0 are not valid
       y.impute[set.cen] = rnorm.trunc(sum(set.cen), mus, ss, lo=0, hi=cutoff)
     }
     if(sum(set.mar) > 0) { # randomly missing
-      # Apri 9, 2018 - added lo=0 cutoff, truncated normal at 0
+      # April 9, 2018 - added lo=0 cutoff, truncated normal at 0
       # mainly for multiplexed experiments where abundances may be lower
       y.impute[set.mar] = rnorm.trunc(sum(set.mar), y.predict[set.mar], 
                                       sigma[set.mar], lo=0)
@@ -341,8 +341,8 @@ eigen_pi = function(m, toplot=TRUE)
 ######################################################
 protein_var = function(Y_raw, treatment){
 # estimates coefficients for all peptides from a single protein
-# a portion of what get_coeffs does , without information computations
-# that is nto needed in imputation
+# a portion of what get_coeffs does, without information computations
+# that is not needed in imputation
 #
 # Input:
 #   Y_raw: m peptides by n samples arrays matrix of expression data

@@ -57,9 +57,9 @@ plot.eigentrends = function(svdr, title1) {
   return(Tk)
 }
 
-# plot 3 eigentrends with a line at 0. Strting at the trend number passed in
-# pos1 parameter provide the starting index for teh 3 trends
-# in cse of a single treatment group u and v matrices are switched..
+# plot 3 eigentrends with a line at 0. Starting at the trend number passed in
+# pos1 parameter provide the starting index for the 3 trends
+# in case of a single treatment group u and v matrices are switched..
 plot.eigentrends.start = function(svdr, title1, pos1 = 1) {
   # No check for valid range of pos1 is performed!!!
   v = svdr$v
@@ -121,21 +121,21 @@ plot.eigentrends.start = function(svdr, title1, pos1 = 1) {
 #' String linear model formula suitable
 #'
 #' Makes a string linear model formula suitable for the right hand side of the
-#' equasion passed into lm()
+#' equation passed into lm()
 #'
 #' eig_norm1 and eig_norm2
 #' Here we incorporate the model matrix from EigenMS
 #' normalization to find the significant
 #' trends in the matrix of residuals.
 #'
-#' @param eff treatment group ordering for all samples being anlysed.
-#'            Single factor with 2+ teatment groups.
+#' @param eff treatment group ordering for all samples being analyzed.
+#'            Single factor with 2+ treatment groups.
 #'            Used to generate formula and contrasts for lm().
 #' @param var_name string variable name to use in the formula
-#' @return data structure with linea model formula and contrasts
+#' @return data structure with linear model formula and contrasts
 #'  \describe{
-#'   \item{lm.formula}{Lienar model formula suitable for right hand side of '
-#'         ~' in lm(), ~ is not included int eh formula}
+#'   \item{lm.formula}{Linear model formula suitable for right hand side of '
+#'         ~' in lm(), ~ is not included in the formula}
 #'   \item{lm.params}{contrasts for lm(), here sum-to-zero constraint only}
 #' }
 #' @examples
@@ -162,7 +162,7 @@ makeLMFormula = function(eff, var_name = '') {
   params = paste('contrasts=list(', cols1[1], '=contr.sum', sep = )
   
   if (ndims > 1) {
-    # removed ndims[2] here, now ndims holds only 1 dimention...
+    # removed ndims[2] here, now ndims holds only 1 dimension...
     for (ii in 2:length(cols1))
     {
       lhs = paste(lhs, "+", cols1[ii])  # bl="contr.sum",
@@ -195,7 +195,7 @@ makeLMFormula = function(eff, var_name = '') {
 #'           each sample i.e. [1 1 1 1 2 2 2 2...]
 #'           or a data frame of factors, eg:
 #'            treatment= data.frame(cbind(data.frame(Group), data.frame(Time))
-#' @param prot.info 2+ colum data frame, pepID, prID columns IN THAT ORDER.
+#' @param prot.info 2+ column data frame, pepID, prID columns IN THAT ORDER.
 #'              IMPORTANT: pepIDs must be unique identifiers and will be used
 #'              as Row Names
 #'              If normalizing non-proteomics data, create a column such as:
@@ -213,7 +213,7 @@ makeLMFormula = function(eff, var_name = '') {
 #'   \item{pres}{matrix of peptides that can be normalized, i.e. have enough
 #'               observations for ANOVA}
 #'   \item{n.treatment}{number of factors passed in}
-#'   \item{n.u.treatment}{number of unique treatment facotr combinations, eg:
+#'   \item{n.u.treatment}{number of unique treatment factor combinations, eg:
 #'                   Factor A: a a a a c c c c
 #'                   Factor B: 1 1 2 2 1 1 2 2
 #'                   then:  n.treatment = 2; n.u.treatment = 4}
@@ -325,7 +325,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
   message('Selecting complete peptides')
   # Should issue an error message if we have NO complete peptides (unlikely)
   # select only 'complete' peptides, no missing values
-  nobs = array(NA, nrow(pres)) # reassign noobs to dims of 'present'
+  nobs = array(NA, nrow(pres)) # reassign nobs to dims of 'present'
   numiter = nrow(pres)
   # vectorized option, use instead of the for-loop bellow
   nobs = matrixStats::rowSums2(!is.na(pres))
@@ -351,12 +351,12 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
   
   # compute bias with 'complete' matrix and residuals from 'present'
   # calculate eigenpeptides for 'complete' data only
-  # if have only 1 group, we do not need to preserve group differernces,
+  # if have only 1 group, we do not need to preserve group differences,
   # everything is the same group, ex: QC samples
   # contrasts will fail if have only 1 group, thus have else
   if (n.u.treatment > 1) {
     message('Got 2+ treatment grps')
-    # using general function that can accomodate for 1+ number of factors
+    # using general function that can accommodate for 1+ number of factors
     lm.fm = makeLMFormula(treatment, 'TREATS')
     TREATS = treatment
     # temp var to work if we got only 1 treatment vector.
@@ -392,12 +392,12 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
   
   R.c_center = scale(R.c, center = TRUE, scale = FALSE)
   my.svd = svd(R.c_center)
-  # can use wrapper below to chek if SVD has a problem...
+  # can use wrapper below to check if SVD has a problem...
   temp = my.svd$u
   my.svd$u = my.svd$v
   my.svd$v = temp
   
-  #identify number of eigenvalues that account for
+  # identify number of eigenvalues that account for
   # a significant amount of residual variation
   # save to return to the user as part of the return list
   numcompletepep = dim(complete)[1]
@@ -466,7 +466,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
 #' @return A structure with multiple components
 #' \describe{
 #'   \item{normalized}{matrix of normalized abundances with 2 columns
-#'                     of protein and peptdie names}
+#'                     of protein and peptide names}
 #'   \item{norm_m}{matrix of normalized abundances, no extra columns}
 #'   \item{eigentrends}{trends found in raw data, bias trends up to h.c}
 #'   \item{norm.svd}{trends in normalized data, if one
@@ -486,7 +486,7 @@ eig_norm1 = function(m, treatment, prot.info, write_to_file = '') {
 #' m_logInts = convert_log2(m_logInts)
 #' grps = as.factor(c('CG','CG','CG', 'mCG','mCG','mCG'))
 #'
-#' set.seed(123) # set for repoducubility of eig_norm1
+#' set.seed(123) # set for reproducibility of eig_norm1
 #' mm_m_ints_eig1 = eig_norm1(m=m_logInts,treatment=grps,prot.info=m_prot.info)
 #' mm_m_ints_eig1$h.c # check the number of bias trends detected
 #' mm_m_ints_norm = eig_norm2(rv=mm_m_ints_eig1)
@@ -502,7 +502,7 @@ eig_norm2 = function(rv) {
   h.c = rv$h.c
   present = rv$present
   toplot1 = rv$toplot1
-  # vector of indicators of peptides that threw exeptions
+  # vector of indicators of peptides that threw exceptions
   exPeps = vector(mode = "numeric", length = nrow(pres))
   
   message("Normalizing...")
@@ -558,7 +558,7 @@ eig_norm2 = function(rv) {
       oopt = options()
       on.exit(options(oopt))
       options(warn = -1)
-      # using general function that can accomodate for 1+ number of factors
+      # using general function that can accommodate for 1+ number of factors
       lm.fm = makeLMFormula(ftemp, 'ftemp')
       modt = try(stats::model.matrix(lm.fm$lm.formula, data = ftemp,
                                      eval(parse(text = lm.fm$lm.params))),
@@ -573,7 +573,7 @@ eig_norm2 = function(rv) {
         options(warn = 0)
         if (!inherits(bhat, "try-error")) {
           betahat[, ii] = bhat
-          # these are the group effects, from estimated coefficients betahat
+          # these are the group effects, from estimated coefficients beta hat
           ceffects = modt %*% bhat
           
           resm = rep(NA, numsamp) # really a vector only, not m
@@ -620,7 +620,7 @@ eig_norm2 = function(rv) {
   graphics::par(mfcol = c(3, 2))
   graphics::par(mar = c(2, 2, 2, 2))
   # center each peptide around zero (subtract its mean across samples)
-  # note: we are not changing matrix itself, only centerig what we pass to svd
+  # note: we are not changing matrix itself, only centering what we pass to svd
   complete_all_center = t(scale(t(complete_all), center = TRUE, scale = FALSE))
   toplot3 = svd(complete_all_center)
   plot.eigentrends(toplot1, "Raw Data")
@@ -651,7 +651,7 @@ eig_norm2 = function(rv) {
 
 #' Surrogate Variable Analysis
 #'
-#' Surrogate Variable Analysis function used internatlly by
+#' Surrogate Variable Analysis function used internally by
 #' eig_norm1 and eig_norm2
 #' Here we incorporate the model matrix from EigenMS
 #' normalization to find the significant
@@ -707,7 +707,7 @@ sva.id = function(dat, n.u.treatment, lm.fm, B = 500, sv.sig = 0.05)
     }
     res0 = t(apply(res, 1, sample, replace = FALSE)) # regression
     # center each peptide around zero (subtract its mean across samples)
-    # note: not changing matrix itself, only centerig what we pass to svd
+    # note: not changing matrix itself, only centering what we pass to svd
     res0_center = t(scale(t(res0), center = TRUE, scale = FALSE))
     uu0 = svd(res0_center)
     temp = uu0$u  # why did tom do this??
