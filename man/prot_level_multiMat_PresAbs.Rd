@@ -4,8 +4,14 @@
 \alias{prot_level_multiMat_PresAbs}
 \title{Multi-Matrix Presence Absence analysis}
 \usage{
-prot_level_multiMat_PresAbs(mm_list, treat, prot.info, prot_col_name,
-  nperm = 500, dataset_suffix)
+prot_level_multiMat_PresAbs(
+  mm_list,
+  treat,
+  prot.info,
+  prot_col_name,
+  nperm = 500,
+  dataset_suffix
+)
 }
 \arguments{
 \item{mm_list}{list of matrices of intensities for each experiment,

@@ -4,8 +4,14 @@
 \alias{prot_level_multi_part}
 \title{Multi-Matrix Differentia Expression Analysis}
 \usage{
-prot_level_multi_part(mm_list, treat, prot.info, prot_col_name,
-  nperm = 500, dataset_suffix)
+prot_level_multi_part(
+  mm_list,
+  treat,
+  prot.info,
+  prot_col_name,
+  nperm = 500,
+  dataset_suffix
+)
 }
 \arguments{
 \item{mm_list}{list of matrices for each experiment, length = number of

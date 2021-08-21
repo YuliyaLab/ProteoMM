@@ -4,8 +4,10 @@
 \name{mm_peptides}
 \alias{mm_peptides}
 \title{mm_peptides - peptide-level intensities for mouse}
-\format{A data frame with 1102 rows and 13 colummns, compiring 7 columns of
-        metadata and 6 columns of peptide intensities. 69 proteins.}
+\format{
+A data frame with 1102 rows and 13 colummns, compiring 7 columns of
+        metadata and 6 columns of peptide intensities. 69 proteins.
+}
 \usage{
 data(mm_peptides)
 }

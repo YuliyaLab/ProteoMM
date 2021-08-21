@@ -4,8 +4,16 @@
 \alias{plot_1prot}
 \title{Plot trends for a single protien}
 \usage{
-plot_1prot(mm, prot.info, prot_to_plot, prot_to_plot_col, gene_name,
-  gene_name_col, colors, mylabs)
+plot_1prot(
+  mm,
+  prot.info,
+  prot_to_plot,
+  prot_to_plot_col,
+  gene_name,
+  gene_name_col,
+  colors,
+  mylabs
+)
 }
 \arguments{
 \item{mm}{matrix of raw intensities}

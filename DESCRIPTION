@@ -22,7 +22,7 @@ License: MIT
 LazyData: TRUE
 Depends: R (>= 3.5)
 Encoding: UTF-8
-RoxygenNote: 6.1.0
+RoxygenNote: 7.1.1
 Imports: gdata,
     biomaRt,
     ggplot2,
@@ -30,7 +30,8 @@ Imports: gdata,
     gtools,
     stats,
     matrixStats,
-    graphics
+    graphics,
+    markdown
 biocViews: MassSpectrometry, Proteomics, Normalization, DifferentialExpression, 
     ImmunoOncology
 Suggests: BiocStyle, knitr, rmarkdown

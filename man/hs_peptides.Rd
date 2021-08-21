@@ -4,8 +4,10 @@
 \name{hs_peptides}
 \alias{hs_peptides}
 \title{hs_peptides - peptide-level intensities for human}
-\format{A data frame with 695 rows and 13 colummns, compiring 7 columns of
-       metadata and 6 columns of peptide intensities. 69 proteins.}
+\format{
+A data frame with 695 rows and 13 colummns, compiring 7 columns of
+       metadata and 6 columns of peptide intensities. 69 proteins.
+}
 \usage{
 data(hs_peptides)
 }

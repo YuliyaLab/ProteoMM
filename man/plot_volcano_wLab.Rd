@@ -4,8 +4,14 @@
 \alias{plot_volcano_wLab}
 \title{Volcano plot with labels for the differentially expressed proteins}
 \usage{
-plot_volcano_wLab(FC, PV, ProtID, FC_cutoff = 2, PV_cutoff = 0.05,
-  figtitle = "")
+plot_volcano_wLab(
+  FC,
+  PV,
+  ProtID,
+  FC_cutoff = 2,
+  PV_cutoff = 0.05,
+  figtitle = ""
+)
 }
 \arguments{
 \item{FC}{vector of fold changes}

@@ -1,4 +1,4 @@
-# Differetial Expression Analsyis to do after Model-based imputaion
+# Differential Expression Analysis to do after Model-based imputation
 #
 # Ref:  "A statistical framework for protein quantitation in bottom-up MS-based
 #        proteomics. Karpievitch Y, Stanley J, Taverner T, Huang J, Adkins JN,
@@ -241,7 +241,7 @@ plot_3_pep_trends_NOfile = function(mm, prot.info, sorted_norm_m,
 }
 
 
-#' Plot trends for a single protien
+#' Plot trends for a single protein
 #'
 #' Plot peptide trends for a protein
 #' @param mm matrix of raw intensities
@@ -305,7 +305,7 @@ plot_3_peptide_trends = function(mm, prot.info, sorted_norm_m,
 
   outfnames_png = paste(gene_name, '_', prot_to_plot, '_3pepTrends.png',sep='')
   grDevices::png(outfnames_png, width = 20, height = 6.4, units='in', res=400)
-  # R cannot figue out how & when res is specifed... (?)
+  # R cannot figure out how & when res is specifued... (?)
   graphics::par(mfcol=c(1,3))
   graphics::matplot(t(tmp), type="l", main=main_title, xaxt="n", ylim=myylim)
   # may need to transpose ylim will be dynamically set here,
@@ -342,7 +342,7 @@ plot_3_peptide_trends = function(mm, prot.info, sorted_norm_m,
 
 
 # function takes a vector of string gene IDs possibly separated by a ';'
-# and returns a vector of the same lenfth with only the first gene ID
+# and returns a vector of the same length with only the first gene ID
 get1sttoken = function(ids)
 {
   ll = length(ids) # 22780
@@ -394,13 +394,13 @@ clip_protID_end = function(ids){
 
 
 ## check for the presence of '+' sign in the
-## specificed columns but column number
+## specified columns but column number
 remove_contaminats_symbol = function(dd, colsCheck=c('Reverse',
                                                      'Potential.contaminant'),
                                      colsCheckSymbol=c('+', '+') )
 {
-  # get column indeces for the specified column names,
-  # eg: 'Reverse' and 'Potential.contaminant'
+  # get column indexes for the specified column names,
+  # e.g. 'Reverse' and 'Potential.contaminant'
   # access 'dd' by the column index to check for '+'
   cols1 = colnames(dd)
   ll = length(colsCheck)
@@ -417,7 +417,7 @@ remove_contaminats_symbol = function(dd, colsCheck=c('Reverse',
 
 
 ## check for the presence of 'REV_', 'CON_' in the
-## specificed columns but column number
+## specified columns but column number
 remove_contaminats_prefix = function(dd,
                                      colsCheck = c('Leading.razor.protein',
                                                    'Leading.razor.protein'),

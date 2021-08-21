@@ -4,8 +4,14 @@
 \alias{MBimpute}
 \title{Model-Based Imputation of missing values}
 \usage{
-MBimpute(mm, treatment, prot.info, pr_ppos = 2, my.pi = 0.05,
-  compute_pi = FALSE)
+MBimpute(
+  mm,
+  treatment,
+  prot.info,
+  pr_ppos = 2,
+  my.pi = 0.05,
+  compute_pi = FALSE
+)
 }
 \arguments{
 \item{mm}{number of peptides x number of samples matrix of intensities}

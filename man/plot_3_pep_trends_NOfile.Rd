@@ -4,9 +4,19 @@
 \alias{plot_3_pep_trends_NOfile}
 \title{Plot peptide trends}
 \usage{
-plot_3_pep_trends_NOfile(mm, prot.info, sorted_norm_m, sorted_prot.info,
-  imp_mm, imp_prot.info, prot_to_plot, prot_to_plot_col, gene_name,
-  gene_name_col, mylabs)
+plot_3_pep_trends_NOfile(
+  mm,
+  prot.info,
+  sorted_norm_m,
+  sorted_prot.info,
+  imp_mm,
+  imp_prot.info,
+  prot_to_plot,
+  prot_to_plot_col,
+  gene_name,
+  gene_name_col,
+  mylabs
+)
 }
 \arguments{
 \item{mm}{matrix of raw intensities}
